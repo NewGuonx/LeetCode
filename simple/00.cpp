@@ -61,6 +61,28 @@ class Solution
         }
         return result;
     }
+    vector<int> inorderTraversal(TreeNode *root)
+    {
+        vector<int> result;
+        stack<const TreeNode *> s;
+        const TreeNode *p = root;
+        while (s.size() || p)
+        {
+            if (p)
+            {
+                s.push(p);
+                p = p->left;
+            }
+            else
+            {
+                p = s.top();
+                s.pop();
+                result.push_back(p->val);
+                p = p->right;
+            }
+        }
+        return result;
+    }
 };
 
 void order(TreeNode *root)
@@ -83,7 +105,7 @@ int main(int argc, char const *argv[])
     Solution s;
     cout << "Pre\n";
     // order(root);
-    vector<int> v = s.preOrder(root);
+    vector<int> v = s.inorderTraversal(root);
     for (auto i : v)
         cout << i << " ";
     return 0;
