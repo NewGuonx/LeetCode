@@ -41,10 +41,11 @@ class Solution
     //     Traverse(root->right,level+1, v);
     // }
 
-    
+
     vector<vector<int>> levelOrderBottom(TreeNode *root)
     {
         vector<vector<int>> res;
+        if (!root) return res;
         queue<TreeNode*> Q, next_Q;
         vector<int> nowLevel;
         Q.push(root);
@@ -60,6 +61,7 @@ class Solution
             nowLevel.clear();
             swap(Q,next_Q);// now Q is empty, let Q be the next level Q.
         }
+        ::reverse(res.begin(), res.end());
         return res;
     }
 };
