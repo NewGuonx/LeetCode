@@ -77,13 +77,14 @@ int main(int argc, char const *argv[])
     /* code */
     //test();
     TreeNode *root = nullptr;
-    int a[] = {10,8,11,6,15,2,5,9,7,3,1,13,14,4,12};
-    for (int i =0; i < 14; i++)
+    int a[] = {10, 8, 11, 6, 15, 2, 5, 9, 7, 3, 1, 13, 14, 4, 12};
+    for (int i = 0; i < 14; i++)
         Insert(root, a[i]);
     Solution s;
-    cout <<"Pre\n";
+    cout << "Pre\n";
     // order(root);
     vector<int> v = s.preOrder(root);
-    for(auto i : v)cout << i << " ";
+    for (auto i : v)
+        cout << i << " ";
     return 0;
 }
