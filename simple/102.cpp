@@ -1,16 +1,16 @@
-// author - newguo@sonaspy.cn 
-// coding - utf_8 
+// author - newguo@sonaspy.cn
+// coding - utf_8
 
-#include<iostream>
-#include<algorithm>
-#include<vector>
-#include<string>
-#include<unordered_map>
-#include<stack>
-#include<queue>
-#include<numeric>
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <string>
+#include <unordered_map>
+#include <stack>
+#include <queue>
+#include <numeric>
 
-#define test() freopen("in","r",stdin)
+#define test() freopen("in", "r", stdin)
 
 using namespace std;
 
@@ -29,7 +29,6 @@ class Solution
     // {
     //     vector<vector<int>> res;
     //     Traverse(root, 1, res);
-    //     ::reverse(res.begin(), res.end());
     //     return res;
     // }
     // void Traverse(TreeNode* root, int level, vector<vector<int>> & v){
@@ -41,27 +40,30 @@ class Solution
     //     Traverse(root->right,level+1, v);
     // }
 
-
     vector<vector<int>> levelOrderBottom(TreeNode *root)
     {
         vector<vector<int>> res;
-        if (!root) return res;
-        queue<TreeNode*> Q, nextLevel_Q;
+        if (!root)
+            return res;
+        queue<TreeNode *> Q, nextLevel_Q;
         vector<int> nowLevel;
         Q.push(root);
-        while(Q.size()){
-            while(Q.size()){
-                TreeNode* node = Q.front();
+        while (Q.size())
+        {
+            while (Q.size())
+            {
+                TreeNode *node = Q.front();
                 Q.pop();
                 nowLevel.push_back(node->val);
-                if(node->left)nextLevel_Q.push(node->left);
-                if(node->right)nextLevel_Q.push(node->right);
+                if (node->left)
+                    nextLevel_Q.push(node->left);
+                if (node->right)
+                    nextLevel_Q.push(node->right);
             }
             res.push_back(nowLevel);
             nowLevel.clear();
-            swap(Q,nextLevel_Q);// now Q is empty, let Q be the next level Q.
+            swap(Q, nextLevel_Q); // now Q is empty, let Q be the next level Q.
         }
-        ::reverse(res.begin(), res.end());
         return res;
     }
 };
