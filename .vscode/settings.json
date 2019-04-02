@@ -9,6 +9,7 @@
         "__hash": "cpp",
         "hash_set": "cpp",
         "vector": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "bitset": "cpp"
     }
 }

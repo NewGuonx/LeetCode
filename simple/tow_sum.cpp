@@ -13,8 +13,7 @@ class Solution
     vector<int> twoSum(vector<int> &nums, int target)
     {
         unordered_map<int, int> mp;
-        vector<int> ans, nums = {-1, -2, -3, -4, -5};
-        int target = -8;
+        vector<int> ans;
         for (int i = 0; i < nums.size(); i++)
             mp[nums[i]] = i;
         for (int i = 0; i < nums.size(); i++)
