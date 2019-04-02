@@ -10,6 +10,7 @@
         "hash_set": "cpp",
         "vector": "cpp",
         "iostream": "cpp",
-        "bitset": "cpp"
+        "bitset": "cpp",
+        "deque": "cpp"
     }
 }
