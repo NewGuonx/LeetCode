@@ -1,27 +1,56 @@
-// author - newguo@sonaspy.cn 
-// coding - utf_8 
+// author - newguo@sonaspy.cn
+// coding - utf_8
 
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
+// #include<setjmp.h>
+#include <stdlib.h>
+#include<string.h>
 
-#define test() freopen("in","r",stdin)
+#define DUMYCOPY for(i = 0; i< 65536; i++)\
+            dst[i] = src[i]
+
+
+#define SMARTCOPY memcpy(dst, src,65536)
+
+
+// jmp_buf buf;
+// #include<setjmp.h>
+#define test() freopen("in", "r", stdin)
 
 using namespace std;
-int a[10000];
 
-int ways(int w, int k){
-    if(w == 0) return 1;
-    if(k <= 0) return 0;
-    return ways(w, k-1) + ways(w-a[k] ,k-1);
-}
+// void banan(){
+//     printf("in banan\n");
+//     longjmp(buf, 1);
+// }
 
+union {
+    char a[10];
+    int i;
+}u;
 
 int main(int argc, char const *argv[])
 {
     /* code */
-    test();
-    int n,m;
-    cin >> n >> m;
-    for(int i = 0; i < n; i++)cin >> a[i];
-    cout << ways(m,n);
+    //test();
+    // if(setjmp(buf))
+    //     printf("back in \n");
+    // else{
+    //     printf("1st Time\n");
+    //     banan();
+    // }
+
+    // int MB = 0;
+    // while (malloc(1 << 20))
+    // {
+    //     ++MB;
+    //     cout << MB << "MB\n";
+    // }
+
+    // char src[65536], dst[65536];
+    // int i, j;
+    // for(int j = 0; j < 100; j++)
+    //     SMARTCOPY;
+    
     return 0;
 }
