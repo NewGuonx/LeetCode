@@ -6,16 +6,24 @@
 #define test() freopen("in","r",stdin)
 
 using namespace std;
+
 class Solution
 {
   public:
-    int hammingWeight(uint32_t n)
+    int hammingDistance(int x, int y)
     {
-        bitset<32> b(n);
-        int res =  b.count();
-        return res;
+        int cnt;
+        x ^= y;
+        cnt = 0;
+        while (x != 0)
+        {
+            x &= (x - 1);
+            cnt++;
+        }
+        return cnt;
     }
 };
+
 int main(int argc, char const *argv[])
 {
     /* code */

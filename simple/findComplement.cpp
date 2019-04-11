@@ -9,11 +9,15 @@ using namespace std;
 class Solution
 {
   public:
-    int hammingWeight(uint32_t n)
+    int findComplement(int num)
     {
-        bitset<32> b(n);
-        int res =  b.count();
-        return res;
+        int temp = num, c = 0;
+        while (temp)
+        {
+            temp >>= 1;
+            c = (c << 1) + 1;
+        }
+        return num ^ c;
     }
 };
 int main(int argc, char const *argv[])
