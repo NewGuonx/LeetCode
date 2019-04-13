@@ -1,14 +1,7 @@
 // author - newguo@sonaspy.cn
 // coding - utf_8
 
-#include <iostream>
-#include <algorithm>
-#include <vector>
-#include <string>
-#include <unordered_map>
-#include <stack>
-#include <queue>
-#include <numeric>
+#include <bits/stdc++.h>
 
 #define test() freopen("in", "r", stdin)
 
@@ -39,14 +32,14 @@ class Solution
 public:
     vector<int> preOrderTraversal(TreeNode *root)
     {
-        vector<int> result;
+        vector<int> resSeq;
         stack<TreeNode *> s;
         TreeNode *p = root;
         while (s.size() || p)
         {
             while (p)
             {
-                result.push_back(p->val);
+                resSeq.push_back(p->val);
                 s.push(p);
                 p = p->left;
             }
@@ -57,12 +50,12 @@ public:
                 p = p->right;
             }
         }
-        return result;
+        return resSeq;
     }
 
     vector<int> inorderTraversal(TreeNode *root)
     {
-        vector<int> result;
+        vector<int> resSeq;
         stack<TreeNode *> s;
         TreeNode *p = root;
         while (s.size() || p)
@@ -76,35 +69,36 @@ public:
             {
                 p = s.top();
                 s.pop();
-                result.push_back(p->val);
+                resSeq.push_back(p->val);
                 p = p->right;
             }
         }
-        return result;
+        return resSeq;
     }
     vector<int> preorder(TreeNode *root)
     {
-        vector<int> result;
+        vector<int> resSeq;
         if (!root)
-            return result;
+            return resSeq;
         stack<TreeNode *> s;
         s.push(root);
         while (s.size())
         {
             root = s.top();
             s.pop();
-            result.push_back(root->val);
+            resSeq.push_back(root->val);
             if (root->right)
                 s.push(root->right);
             if (root->left)
                 s.push(root->left);
         }
-        return result;
+        return resSeq;
     }
     vector<int> postorder(TreeNode *root)
     {
-        vector<int> result;
-        if(!root) return result;
+        vector<int> resSeq;
+        if (!root)
+            return resSeq;
         stack<pair<TreeNode *, bool>> s;
         s.push(make_pair(root, false));
         bool isMyTurn;
@@ -114,17 +108,17 @@ public:
             isMyTurn = s.top().second;
             s.pop();
             if (isMyTurn)
-                result.push_back(root->val);
+                resSeq.push_back(root->val);
             else
             {
                 s.push(make_pair(root, true));
-                if(root->right)
-                s.push(make_pair(root->right, false));
-                if(root->left)
-                s.push(make_pair(root->left, false));
+                if (root->right)
+                    s.push(make_pair(root->right, false));
+                if (root->left)
+                    s.push(make_pair(root->left, false));
             }
         }
-        return result;
+        return resSeq;
     }
 };
 
