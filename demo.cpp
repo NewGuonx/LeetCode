@@ -1,56 +1,56 @@
-// author - newguo@sonaspy.cn
-// coding - utf_8
-
-#include <bits/stdc++.h>
-// #include<setjmp.h>
-#include <stdlib.h>
-#include<string.h>
-
-#define DUMYCOPY for(i = 0; i< 65536; i++)\
-            dst[i] = src[i]
-
-
-#define SMARTCOPY memcpy(dst, src,65536)
-
-
-// jmp_buf buf;
-// #include<setjmp.h>
-#define test() freopen("in", "r", stdin)
-
-using namespace std;
-
-// void banan(){
-//     printf("in banan\n");
-//     longjmp(buf, 1);
-// }
-
-union {
-    char a[10];
-    int i;
-}u;
-
-int main(int argc, char const *argv[])
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+int gcd(int a, int b)
 {
-    /* code */
-    //test();
-    // if(setjmp(buf))
-    //     printf("back in \n");
-    // else{
-    //     printf("1st Time\n");
-    //     banan();
-    // }
-
-    // int MB = 0;
-    // while (malloc(1 << 20))
-    // {
-    //     ++MB;
-    //     cout << MB << "MB\n";
-    // }
-
-    // char src[65536], dst[65536];
-    // int i, j;
-    // for(int j = 0; j < 100; j++)
-    //     SMARTCOPY;
-    
-    return 0;
+    int temp;
+    while (b)
+    {
+        temp = a % b;
+        a = b;
+        b = temp;
+    }
+    return a;
+}
+int main()
+{
+    double m;
+    int max_de, r;
+    scanf("%d", &max_de);
+    scanf("%lf", &m);
+    printf("%lf\n", m);
+    double minn = abs(0 - m);
+    int n = minn;
+    m -= n;
+    printf("%lf\n", minn);
+    int a = 0, b = 1, lasta = 0, lastb = 1;
+    for (int i = 1; i <= 100000; i++)
+    {
+        int sum = (int)(i * m + 0.5); //核心逼近分子
+        if (sum <= i)
+        {
+            double f = sum * 1.0 / i;
+            double k = abs(f - m);
+            if (minn > k) //一步步缩小差距，使真实商与被给与的小数差值达到最小
+            {
+                minn = k;
+                a = sum;
+                b = i;
+            }
+            r = gcd(a, b);
+            if (b / r >= max_de)
+            {
+                break;
+            }
+            lasta = a;
+            lastb = b;
+        }
+    }
+    if (b / r > max_de)
+    {
+        a = lasta;
+        b = lastb;
+    }
+    r = gcd(a, b);
+    printf("%d/%d\n", a / r + n * b / r, b / r);
 }
