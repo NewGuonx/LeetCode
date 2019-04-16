@@ -37,6 +37,6 @@ int main(int argc, char const *argv[])
     /* code */
     //test();
     Solution s;
-    cout << s.myAtoi("214748364677");
+    
     return 0;
 }
