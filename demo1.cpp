@@ -26,9 +26,14 @@ ClassC aObject;
 ClassA *pA = &aObject;
 ClassB *pB = &aObject;
 ClassC *pC = &aObject;
+float fun(int x, int y)
+{
+    return (x + y);
+}
 int main(int argc, char const *argv[])
 {
     /* code */
     //test();
+    
     return 0;
 }
