@@ -11,6 +11,6 @@ int main(int argc, char const *argv[])
 {
     /* code */
     //test();
-    unordered_map<int,int>mp;
+    
     return 0;
 }
