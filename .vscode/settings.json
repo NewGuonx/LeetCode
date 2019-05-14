@@ -12,6 +12,7 @@
         "iostream": "cpp",
         "bitset": "cpp",
         "deque": "cpp",
-        "unordered_map": "cpp"
+        "unordered_map": "cpp",
+        "__config": "cpp"
     }
 }
