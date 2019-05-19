@@ -36,7 +36,5 @@ int main(int argc, char const *argv[])
 {
     /* code */
     //test();
-    Solution s;
-    
     return 0;
 }
