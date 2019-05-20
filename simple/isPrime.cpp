@@ -1,15 +1,15 @@
-// author - newguo@sonaspy.cn 
-// coding - utf_8 
+// author - newguo@sonaspy.cn
+// coding - utf_8
 
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 
-#define test() freopen("in","r",stdin)
+#define test() freopen("in", "r", stdin)
 
 using namespace std;
 
 class Solution
 {
-  public:
+public:
     int countPrimes(int n)
     {
         if (n < 3)
@@ -34,5 +34,11 @@ int main(int argc, char const *argv[])
 {
     /* code */
     //test();
+    int prime[100001];
+    memset(prime, 1, 100001);
+    for (int i = 2; i * i < 100001; i++)
+        for (int j = 2; j * i < 10001; j++)
+            prime[i * j] = 0;
+    prime[2] = 1, prime[3] = 1, prime[0] = 0, prime[1] = 0;
     return 0;
 }
