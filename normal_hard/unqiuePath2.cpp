@@ -20,15 +20,15 @@ public:
     }
 
 private:
-    int M, N, res;
+    int M, N;
     vector<vector<int>> f;
-    int dfs(vector<vector<int>> &grid, int i, int j)
+    int dfs(vector<vector<int>> &grid, int x, int y)
     {
-        if (i < 0 || j < 0 || grid[i][j] == 1)
+        if (x < 0 || y < 0 || grid[x][y] == 1)
             return 0;
-        if (i == 0 && j == 0)
+        if (x == 0 && y == 0)
             return f[0][0];
-        return f[i][j] > 0 ? f[i][j] : f[i][j] = dfs(grid, i - 1, j) + dfs(grid, i, j - 1);
+        return f[x][y] > 0 ? f[x][y] : f[x][y] = dfs(grid, x - 1, y) + dfs(grid, x, y - 1);
     }
 };
 int main(int argc, char const *argv[])

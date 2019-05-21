@@ -1,32 +1,33 @@
 // author - newguo@sonaspy.cn
 // coding - utf_8
 
-#include <iostream>
-#include <list>
-#include <algorithm>
-using namespace std;
+#include <bits/stdc++.h>
 
-int main(int argc, char const *argv[])
+#define test() freopen("in", "r", stdin)
+
+using namespace std;
+// 0-1 -> dfs
+int target = 1000, ans_sum = 0, N = 20;
+vector<int> v(1000);
+
+void dfs(int id, int sum)
 {
-    /* code */
-    //freopen("in","r",stdin);
-    list<int> ls;
-    int N, M, i, var, flag = 0;
-    cin >> N >> M;
-    for (i = 0; i < N; i++)
+    if (id == N)
     {
-        cin >> var;
-        ls.push_back(var);
+        if (sum > ans_sum)
+            ans_sum = sum;
+        return;
     }
-    for (i = 0; i < M; i++)
-        ls.push_front(ls.back()), ls.pop_back();
-    for (auto p : ls)
-    {
-        if (!flag)
-            flag = 1;
-        else
-            cout << " ";
-        cout << p;
-    }
+    dfs(id + 1, sum);
+    if (sum + v[id] <= target)
+        dfs(id + 1, sum + v[id]);
+}
+int main(int argc, const char *argv[])
+{
+    // insert code here...
+    srand(time(NULL));
+    generate(v.begin(), v.end(), [] { return rand() % 1000; });
+    dfs(0, 0);
+    cout << abs(ans_sum - target) << endl;
     return 0;
 }
