@@ -6,28 +6,17 @@
 #define test() freopen("in", "r", stdin)
 
 using namespace std;
-// 0-1 -> dfs
-int target = 1000, ans_sum = 0, N = 20;
-vector<int> v(1000);
 
-void dfs(int id, int sum)
+int main(int argc, char const *argv[])
 {
-    if (id == N)
-    {
-        if (sum > ans_sum)
-            ans_sum = sum;
-        return;
-    }
-    dfs(id + 1, sum);
-    if (sum + v[id] <= target)
-        dfs(id + 1, sum + v[id]);
-}
-int main(int argc, const char *argv[])
-{
-    // insert code here...
-    srand(time(NULL));
-    generate(v.begin(), v.end(), [] { return rand() % 1000; });
-    dfs(0, 0);
-    cout << abs(ans_sum - target) << endl;
+    /* code */
+    //test();
+    vector<vector<int>> a(2, vector<int>(2, 8));
+    a[1][0] = 10, a[1][1] = 20;
+    cout << binary_search(a[0].begin(), a.back().end(), 20) << endl;
+    cout << &a[0][0] << endl;
+    cout << &a[0][1] << endl;
+    cout << &a[1][0] << endl;
+    cout << &a[1][1] << endl;
     return 0;
 }
