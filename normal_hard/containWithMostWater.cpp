@@ -7,7 +7,7 @@
 
 using namespace std;
 class Solution
-{
+{//most water
 public:
     int maxArea(vector<int> &height)
     {

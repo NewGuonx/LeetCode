@@ -1,9 +1,9 @@
-// author - newguo@sonaspy.cn 
-// coding - utf_8 
+// author - newguo@sonaspy.cn
+// coding - utf_8
 
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 
-#define test() freopen("in","r",stdin)
+#define test() freopen("in", "r", stdin)
 
 using namespace std;
 class Solution
@@ -11,28 +11,56 @@ class Solution
 public:
     int search(vector<int> &nums, int target)
     {
-        int left = 0, right = nums.size() - 1;
-        while (left <= right)
+        int lo = 0, hi = nums.size() - 1;
+        while (lo <= hi)
         {
-            int mid = left + (right - left) / 2;
+            int mid = lo + (hi - lo) / 2;
             if (nums[mid] == target)
                 return mid;
-            else if (nums[mid] < nums[right])
+            else if (nums[mid] < nums[hi])
             {
-                if (nums[mid] < target && nums[right] >= target)
-                    left = mid + 1;
+                if (nums[mid] < target && target <= nums[hi])
+                    lo = mid + 1;
                 else
-                    right = mid - 1;
+                    hi = mid - 1;
             }
             else
             {
-                if (nums[left] <= target && nums[mid] > target)
-                    right = mid - 1;
+                if (nums[lo] <= target && target < nums[mid])
+                    hi = mid - 1;
                 else
-                    left = mid + 1;
+                    lo = mid + 1;
             }
         }
         return -1;
+    }
+    //with duplicates
+    bool search2(vector<int> &nums, int target)
+    {
+        int lo = 0, hi = nums.size();
+        while (lo != hi)
+        {
+            int mid = lo + (hi - lo) / 2;
+            if (nums[mid] == target)
+                return true;
+            if (nums[lo] < nums[mid])
+            {
+                if (nums[lo] <= target && target <= nums[mid])
+                    hi = mid;
+                else
+                    lo = mid + 1;
+            }
+            else if (nums[lo] > nums[mid])
+            {
+                if (nums[mid] < target && target <= nums[hi - 1])
+                    lo = mid + 1;
+                else
+                    hi = mid;
+            }
+            else
+                lo++;
+        }
+        return false;
     }
 };
 int main(int argc, char const *argv[])
