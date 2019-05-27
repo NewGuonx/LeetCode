@@ -21,7 +21,7 @@ public:
             else
             {
                 tmp = s.top(), s.pop();
-                res = max(res, heights[tmp] * s.empty() ? i : i - s.top() - 1);
+                res = max(res, heights[tmp] * (s.empty() ? i : i - s.top() - 1));
             }
         }
         return res;
