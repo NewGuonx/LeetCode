@@ -27,9 +27,6 @@ int main(int argc, char const *argv[])
 {
     /* code */
     //test();
-    int a[8] = {15, 9, 7, 8, 20, -1, 7, 4};
-    make_heap(a, a + 8, greater<int>());
-    for (int i = 0; i < 8; i++)
-        cout << a[i] << " ";
+    cout << (5 == 5 == 5 == 0 == 1);
     return 0;
 }
