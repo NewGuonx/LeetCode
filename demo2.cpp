@@ -27,6 +27,5 @@ int main(int argc, char const *argv[])
 {
     /* code */
     //test();
-    cout << (5 == 5 == 5 == 0 == 1);
     return 0;
 }

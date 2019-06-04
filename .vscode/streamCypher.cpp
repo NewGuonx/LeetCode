@@ -58,13 +58,17 @@ int main(int argc, char const *argv[])
 {
     /* code */
     //test();
-    SymmetricCypher demo;
-    stream c = demo.get_cypher("I love s ki");
-    cout << "Cypher Stream is : \n";
-    for (auto i : c)
-        cout << i;
-    cout << endl;
-    cout << "text is : \n";
-    cout << demo.get_text(c);
+    // SymmetricCypher demo;
+    // stream c = demo.get_cypher("I love s ki");
+    // cout << "Cypher Stream is : \n";
+    // for (auto i : c)
+    //     cout << i;
+    // cout << endl;
+    // cout << "text is : \n";
+    // cout << demo.get_text(c);
+    byte b(92);
+    cout << b << endl;
+    for (int i = 7; i > -1; i--)
+        cout << b[i];
     return 0;
 }

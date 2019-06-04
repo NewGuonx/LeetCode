@@ -7,52 +7,82 @@
 
 using namespace std;
 typedef bitset<8> byte;
-typedef bitset<32> block;
+typedef bitset<4> block;
 typedef vector<byte> stream;
-typedef vector<block> blocks;
 class SymmetricCypher
 {
 public:
     typedef bitset<8> byte;
-    typedef bitset<32> block;
     typedef vector<byte> stream;
-    typedef vector<block> blocks;
     SymmetricCypher()
     {
-        srand(time(NULL));
-        this->key = generate_key();
+        generate_key();
     }
-    blocks get_cypher(string s)
+    string get_cypher(string s)
     {
-        blocks cypher;
-        s.resize(s.size() + s.size() % 4);
-        for (int i = 0; i < s.size(); i += 4)
+        string cypher;
+        for (int j = 0; j < s.size(); j++)
         {
-            byte b1(s[i]), b2(s[i + 1]), b3(s[i + 2]), b4(s[i + 3]);
-            byte b[4] = {b1, b2, b3, b4};
-            block blk;
-            for (int j = 0; j < 32; j++)
-                blk[j] = b[j / 8][7 - j % 8];
-            cypher.push_back(blk ^ key);
+            byte b(s[j]);
+            block bk1, bk2;
+            for (int i = 7, c = 0; i > 3; i--, c++)
+                bk1[c] = b[i];
+            for (int i = 3, c = 3; i > -1; i--, c--)
+                bk2[c] = b[i];
+            cout << b << endl;
+            cout << bk1 << bk2 << endl;
+            bk1 = encry_mp[bk1];
+            bk2 = encry_mp[bk2];
+            for (int i = 7, c = 3; i > 3; i--, c--)
+                b[i] = bk1[c];
+            for (int i = 3, c = 3; i > -1; i--, c--)
+                b[i] = bk2[c];
+            cout << bk1 << bk2 << endl;
+            cout << b << endl;
+            cout << endl;
+            cypher.push_back(char(b.to_ulong()));
         }
         return cypher;
     }
-    string get_text(blocks cypher)
+    string get_text(string cypher)
     {
         string text;
         for (int i = 0; i < cypher.size(); i++)
-            text.push_back(char((cypher[i] ^ key).to_ulong()));
+        {
+            byte b(cypher[i]);
+            block bk1, bk2;
+            for (int i = 7, c = 0; i > 3; i--, c++)
+                bk1[c] = b[i];
+            for (int i = 3, c = 0; i > -1; i--, c++)
+                bk2[c] = b[i];
+            bk1 = decry_mp[bk1];
+            bk2 = decry_mp[bk2];
+            for (int i = 7, c = 3; i > 3; i--, c--)
+                b[i] = bk1[c];
+            for (int i = 3, c = 3; i > 3; i--, c--)
+                b[i] = bk2[c];
+            text.push_back(char(b.to_ulong()));
+        }
         return text;
     }
 
 private:
-    bitset<32> key;
-    inline bitset<32> generate_key()
+    unordered_map<block, block> encry_mp, decry_mp;
+    void generate_key()
     {
-        bitset<32> _s;
-        for (int i = 0; i < 32; i++)
-            _s[i] = rand() % 2;
-        return _s;
+        for (int i = 0; i < 16; i++)
+        {
+            block b(i), b1;
+            int tmp;
+            while (decry_mp.count(b1))
+            {
+                tmp = rand() % 16;
+                block bb(tmp);
+                b1 = bb;
+            }
+            encry_mp[b] = b1;
+            decry_mp[b1] = b;
+        }
     }
 };
 
@@ -60,13 +90,15 @@ int main(int argc, char const *argv[])
 {
     /* code */
     //test();
+    srand(time(NULL));
     SymmetricCypher demo;
-    blocks c = demo.get_cypher("IIII");
-    cout << "Cypher Stream is : \n";
-    for (auto i : c)
-        cout << i;
-    cout << endl;
-    cout << "text is : \n";
-    cout << demo.get_text(c);
+    string c = demo.get_cypher("asdasd");
+    cout << c;
+    // cout << "Cypher Stream is : \n";
+    // for (auto i : c)
+    //     cout << i;
+    // cout << endl;
+    // cout << "text is : \n";
+    // cout << demo.get_text(c);
     return 0;
 }
