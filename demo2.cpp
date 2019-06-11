@@ -10,16 +10,17 @@ int bsearch(int array[], int n, int v)
 {
     int left, right, middle;
     left = 0, right = n - 1;
+    int num = 0;
     while (left <= right)
     {
         middle = left + (right - left) / 2;
-        cout << middle << endl;
+        num++;
         if (array[middle] > v)
             right = middle - 1;
         else if (array[middle] < v)
             left = middle + 1;
         else
-            return middle;
+            return num;
     }
     return -1;
 }
@@ -27,5 +28,7 @@ int main(int argc, char const *argv[])
 {
     /* code */
     //test();
+    int a[11] = {2, 11, 15, 19, 30, 32, 61, 72, 88, 90, 96};
+    cout << bsearch(a, 11, 15);
     return 0;
 }
