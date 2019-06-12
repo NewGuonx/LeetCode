@@ -28,7 +28,9 @@ int main(int argc, char const *argv[])
 {
     /* code */
     //test();
-    int a[11] = {2, 11, 15, 19, 30, 32, 61, 72, 88, 90, 96};
-    cout << bsearch(a, 11, 15);
+    //int a[11] = {2, 11, 15, 19, 30, 32, 61, 72, 88, 90, 96};
+    //cout << bsearch(a, 11, 15);
+    int a[3][4];
+    cout << *(*(a + 1) + 2);
     return 0;
 }

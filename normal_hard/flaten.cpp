@@ -26,8 +26,7 @@ private:
     TreeNode *tmp;
     void postorder(TreeNode *&root)
     {
-        if (!root)
-            return;
+        if (!root) return;
         postorder(root->right);
         postorder(root->left);
         root->right = tmp;
