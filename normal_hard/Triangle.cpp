@@ -6,20 +6,28 @@
 #define test() freopen("in", "r", stdin)
 
 using namespace std;
-class Solution
-{
-public:
-    int minimumTotal(vector<vector<int>> &triangle)
-    {
-        for (int i = triangle.size() - 2; i > -1; i--)
-            for (int j = 0; j < i + 1; j++)
-                triangle[i][j] += min(triangle[i + 1][j], triangle[i + 1][j + 1]);
-        return triangle[0][0];
-    }
-};
+
 int main(int argc, char const *argv[])
 {
     /* code */
     //test();
+    const int MAXN = 1001;
+    int n;
+    vector<int> a(MAXN), f(MAXN, 1);
+    cin >> n;
+    for (int i = 0; i < n; i++)
+    {
+        cin >> a[i];
+        f[MAXN] = 1;
+    }
+
+    for (int i = 1; i < n; i++)
+    {
+        for (int k = 0; k < i; k++)
+            if (a[k] < a[i])
+                f[i] = max(f[k] + 1, f[i]);
+    }
+
+    int max_len = *max_element(f.begin(), f.begin() + n);
     return 0;
 }
