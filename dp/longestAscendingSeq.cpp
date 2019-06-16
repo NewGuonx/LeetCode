@@ -21,7 +21,7 @@ int main(int argc, char const *argv[])
     {
         for (int k = 0; k < i; k++)
             if (a[k] < a[i])
-                f[i] = max(f[k] + 1, f[i]);
+                f[i] = max(f[i], f[k] + 1);
     }
     int max_len = *max_element(f.begin(), f.begin() + n);
     return 0;
