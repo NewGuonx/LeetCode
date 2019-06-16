@@ -13,7 +13,7 @@ public:
     {
         if (s.empty())
             return ans;
-        this->ss = s;
+        this->tmp_s = s;
         n = s.size();
         dfs(0);
         return ans;
@@ -22,21 +22,21 @@ public:
 private:
     vector<vector<string>> ans;
     vector<string> path;
-    string ss;
+    string tmp_s;
     int n;
-    void dfs(int begin)
+    void dfs(int cur)
     {
-        if (begin == n)
+        if (cur == n)
         {
             ans.push_back(path);
             return;
         }
-        for (int i = begin; i < n; i++)
+        for (int walk = cur; walk < n; walk++)
         {
-            if (isPalin(begin, i))
+            if (isPalin(cur, walk))
             {
-                path.push_back(ss.substr(begin, i - begin + 1));
-                dfs(i + 1);
+                path.push_back(tmp_s.substr(cur, walk - cur + 1));
+                dfs(walk + 1);
                 path.pop_back();
             }
         }
@@ -45,10 +45,11 @@ private:
     {
         while (lo < hi)
         {
-            if (ss[lo] != ss[hi])
+            if (tmp_s[lo] != tmp_s[hi])
                 return false;
             lo++, hi--;
         }
+        return true;
     }
 };
 int main(int argc, char const *argv[])
