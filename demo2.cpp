@@ -24,13 +24,37 @@ int bsearch(int array[], int n, int v)
     }
     return -1;
 }
+void funa(int *x, int *y)
+{
+    *x = *x + *y;
+    *y = *x - *y;
+    *x = *x - *y;
+}
+inline int GCD(int n1, int n2)
+{
+    while (n2 > 0)
+    {
+        int tmp = n1 % n2;
+        n1 = n2;
+        n2 = tmp;
+    }
+    return n1;
+}
 int main(int argc, char const *argv[])
 {
     /* code */
     //test();
-    //int a[11] = {2, 11, 15, 19, 30, 32, 61, 72, 88, 90, 96};
-    //cout << bsearch(a, 11, 15);
-    int a[3][4];
-    cout << *(*(a + 1) + 2);
+    // int a[11] = {13, 18, 24, 35, 47, 50, 62};
+    // cout << bsearch(a, 7, 24);
+    double a = 1.11111111111111;
+    printf("%%");
     return 0;
 }
+/*
+
+    
+
+
+
+
+ */
