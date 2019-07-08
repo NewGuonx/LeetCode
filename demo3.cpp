@@ -57,8 +57,13 @@ int main(int argc, char const *argv[])
 {
     /* code */
     //test();
-    int a[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    int b[5] = {3, 5, 7, 12, 15};
-    cout << M_search(a, b, 10, 5);
+    float x = 1.5;
+    switch ((int)x)
+    {
+    case 1:
+        break;
+    default:
+        break;
+    }
     return 0;
 }

@@ -9,5 +9,7 @@ int main(int argc, char const *argv[])
 {
     /* code */
     //test();
+    int k = 5, n = 0;
+    if(++k % 2 == 0)puts("21");
     return 0;
 }
