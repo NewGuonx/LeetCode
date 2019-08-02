@@ -54,11 +54,12 @@ int M_search(int *a, int *b, int n1, int n2)
     return min(a[lo1], b[lo2]);
 }
 
-bool isParlin(string s, int lo, int hi)
+bool isParlin(string s)
 {
+    auto lo = s.begin(), hi = s.end();
     if (lo != hi)
         for (; lo < --hi; ++lo)
-            if (s[lo] != s[hi])
+            if (*lo != *hi)
                 return false;
     return true;
 }
@@ -67,6 +68,7 @@ int main(int argc, char const *argv[])
 {
     /* code */
     //test();
-    char ca[][5] = {"A", "B", "CCC"};
+    string ss = "121";
+    cout << isParlin(ss);
     return 0;
 }
