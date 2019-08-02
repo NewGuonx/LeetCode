@@ -6,6 +6,8 @@
 #define test() freopen("in", "r", stdin)
 
 using namespace std;
+#include <stdio.h>
+
 int bsearch(int array[], int n, int v)
 {
     int left, right, middle;
@@ -32,7 +34,7 @@ void funa(int *x, int *y)
 }
 inline int GCD(int n1, int n2)
 {
-    while (n2 > 0)
+    while (n2)
     {
         int tmp = n1 % n2;
         n1 = n2;
@@ -40,14 +42,29 @@ inline int GCD(int n1, int n2)
     }
     return n1;
 }
+
+inline double f(double s) { return s * s * s - 4 * s * s + 3 * s - 6; }
+inline double dichotomy(string s)
+{
+    double lo = -100, hi = 100, mid;
+    while (f(lo) * f(hi) != 0)
+    {
+        mid = (lo + hi) / 2;
+        if (f(lo) * f(mid) > 0)
+            lo = mid;
+        else
+            hi = mid;
+        if (abs(f(mid)) < 1e-4)
+            break;
+    }
+    return mid;
+}
+
 int main(int argc, char const *argv[])
 {
     /* code */
     //test();
-    // int a[11] = {13, 18, 24, 35, 47, 50, 62};
-    // cout << bsearch(a, 7, 24);
-    double a = 1.11111111111111;
-    printf("%%");
+    cout << sizeof((float)10 / 2);
     return 0;
 }
 /*

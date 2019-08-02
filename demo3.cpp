@@ -53,17 +53,20 @@ int M_search(int *a, int *b, int n1, int n2)
     }
     return min(a[lo1], b[lo2]);
 }
+
+bool isParlin(string s, int lo, int hi)
+{
+    if (lo != hi)
+        for (; lo < --hi; ++lo)
+            if (s[lo] != s[hi])
+                return false;
+    return true;
+}
+
 int main(int argc, char const *argv[])
 {
     /* code */
     //test();
-    float x = 1.5;
-    switch ((int)x)
-    {
-    case 1:
-        break;
-    default:
-        break;
-    }
+    char ca[][5] = {"A", "B", "CCC"};
     return 0;
 }

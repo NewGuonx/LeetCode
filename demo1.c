@@ -1,15 +1,27 @@
-// author - newguo@sonaspy.cn
-// coding - utf_8
-
 #include <stdio.h>
-#include <math.h>
-#define test() freopen("in", "r", stdin)
 
-int main(int argc, char const *argv[])
+struct node
 {
-    /* code */
-    //test();
-    int k = 5, n = 0;
-    if(++k % 2 == 0)puts("21");
+    struct node *next;
+    int d;
+};
+typedef struct aa
+{
+    int n;
+    double m;
+} ABC;
+struct student
+{
+    int num;
+    char name[30];
+    float score;
+} stud1;
+int main(int argc, char **argv)
+{
+    int x = '\2';
+    double b = 1e-1;
+    long int c;
+
+    printf("%lu", sizeof stud1);
     return 0;
 }
