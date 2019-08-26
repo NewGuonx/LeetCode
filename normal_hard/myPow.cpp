@@ -9,23 +9,23 @@ using namespace std;
 class Solution
 {
 public:
-    double _myPow(double x, int n)
-    {
-        if (!n)
-            return 1.0;
-        double num;
-        if (n % 2)
-        {
-            num = _myPow(x, n / 2);
-            return num * num * x;
-        }
-        num = _myPow(x, n / 2);
-        return num * num;
-    }
     double myPow(double x, int n)
     {
-        double res = _myPow(x, n);
-        return n < 0 ? 1 / res : res;
+        long long N = n;
+        if (N < 0)
+        {
+            x = 1 / x;
+            N = -N;
+        }
+        double ans = 1;
+        double cur = x;
+        for (long long i = N; i; i /= 2)
+        {
+            if ((i % 2) == 1)
+                ans *= cur;
+            cur *= cur;
+        }
+        return ans;
     }
 };
 
