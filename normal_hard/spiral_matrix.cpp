@@ -1,4 +1,4 @@
-// author - newguo@sonaspy.cn
+// author -sonaspy@outlook.com
 // coding - utf8
 
 #include <bits/stdc++.h>
