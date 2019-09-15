@@ -1124,7 +1124,7 @@ struct BTNode
     BTNode()
     {
         parent = nullptr;
-        child.push_back(1, nullptr);
+        child.push_back(nullptr);
     }
     BTNode(T x, BTNode<T> *lc = nullptr, BTNode<T> *rc = nullptr)
     {
@@ -1160,9 +1160,50 @@ protected:
     unordered_set<BTNode<T> *> _memoryOfNode;
     void __overfSolution(BTNode<T> *v)
     {
+        if (v->key.size() <= _order - 1)
+            return;
+        int s = _order / 2;
+        BTNode<T> *u = new BTNode<T>();
+
+        // right split [0 1 2 |<3>| 4 5]
+        u->child.insert(u->child.begin(), v->child.begin() + s + 1, v->child.begin() + _order + 1);
+        v->child.erase(v->child.begin() + s + 1, v->child.begin() + _order + 1);
+
+        u->key.insert(u->key.begin(), v->key.begin() + s + 1, v->key.begin() + _order);
+        v->key.erase(v->key.begin() + s + 1, v->key.begin() + _order);
+
+        if (v->child.front())
+        {
+            for (int j = 0; j < _order - s; j++)
+                u->child[j]->parent = u;
+        }
+        BTNode<T> *p = v->parent;
+        if (!p)
+        {
+            p = new BTNode<T>();
+            _root = p;
+            p->child[0] = v;
+            v->parent = p;
+        }
+
+        int r = upper_bound(p->key.begin(), p->key.end(), v->key[0]) - p->key.begin();
+        p->key.insert(p->key.begin() + r, *(v->key.begin() + s));
+        v->key.erase(v->key.begin() + s);
+        p->child.insert(p->child.begin() + r + 1, u);
+        u->parent = p;
+
+        __overfSolution(p);
     }
+
     void __underfSolution(BTNode<T> *v)
     {
+    }
+    inline void _output_node(BTNode<T> *v)
+    {
+        cout << " ( ";
+        for (auto i : v->key)
+            cout << i << " ";
+        cout << ") ";
     }
 
 public:
@@ -1174,6 +1215,28 @@ public:
     ~BTree()
     {
         this->clear();
+    }
+    inline void printTree()
+    {
+        BTNode<T> *v = _root;
+        queue<BTNode<T> *> q, nexq;
+        q.push(v);
+        int le = 1;
+        while (q.size())
+        {
+            printf("LeveL %d : ", le);
+            while (q.size())
+            {
+                v = q.front(), q.pop();
+                _output_node(v);
+                for (auto chi : v->child)
+                    if (chi)
+                        nexq.push(chi);
+            }
+            cout << endl;
+            le++;
+            swap(q, nexq);
+        }
     }
     inline void const clear()
     {
@@ -1191,15 +1254,48 @@ public:
         _last = nullptr;
         while (v)
         {
-            auto it = lower_bound(v->key.begin(), v->key.end());
+            auto it = lower_bound(v->key.begin(), v->key.end(), x);
             if (it != v->key.end() && *it == x)
                 return v;
             _last = v, v = v->child[it - v->key.begin()];
         }
         return nullptr;
     }
-    bool insert(const T &x) {}
-    bool erase(const T &x) {}
+    bool insert(const T &x)
+    {
+        BTNode<T> *v = search(x);
+        if (v)
+            return 0;
+        int r = upper_bound(_last->key.begin(), _last->key.end(), x) - _last->key.begin();
+        _last->key.insert(_last->key.begin() + r, x);
+        if (_last->child.size() < r + 1)
+            _last->child.resize(r + 1);
+        _last->child.insert(_last->child.begin() + r + 1, nullptr);
+        _size++;
+        __overfSolution(_last); // key size <= m - 1
+        return true;
+    }
+    bool erase(const T &x)
+    {
+        BTNode<T> *v = search(x);
+        if (!v)
+            return false;
+        int r = lower_bound(v->key.begin(), v->key.end(), x) - v->key.begin();
+        if (v->child.front())
+        {
+            BTNode<T> *u = v->child[r + 1];
+            while (u->child[0])
+                u = u->child[0];
+            v->key[r] = u->key[0];
+            v = u;
+            r = 0;
+        }
+        v->key.erase(v->key.begin() + r);
+        v->child.erase(v->child.begin() + 1 + r);
+        _size--;
+        __underfSolution(v);
+        return true;
+    }
 };
 
 template <typename T>
