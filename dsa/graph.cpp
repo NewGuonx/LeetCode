@@ -1,7 +1,7 @@
 // author - newguo@sonaspy.cn
 // coding - utf_8
 
-#define SIZE 8
+#define SIZE 100
 #include <bits/stdc++.h>
 #include "dsa.h"
 #define test() freopen("in", "r", stdin)
@@ -17,7 +17,7 @@ int main(int argc, char const *argv[])
     int n, m, a1, a2, d;
     n = SIZE;
     vector<vector<int>> g(n, vector<int>(n, INF_VAL));
-    //g[0][1] = 3, g[0][2] = 4, g[2][5] = 5, g[5][8] = 2, g[2][4] = 3, g[7][8] = 10, g[8][9] = 1, g[7][9] = 4, g[4][7] = 4, g[1][4] = 1, g[1][3] = 2, g[4][6] = 8, g[9][10] = 6, g[3][6] = 6, g[6][10] = 7;
+    //g[0][1] = 3, g[0][2] = 8, g[2][4] = 10, g[2][1] = 4, g[1][3] = 9, g[3][5] = 6, g[1][4] = 6, g[4][5] = 9;
 
     //dg.init(g);
 
@@ -31,7 +31,7 @@ int main(int argc, char const *argv[])
     while ((tt = getchar()) != '0')
     {
         dGraph dg;
-        dg.rand_acyclic(n, 3, 11);
+        dg.rand_acyclic_init(n, 10, 11);
         cout << "acyclic " << dg.acyclic() << endl;
         cout << "num of edge is -> " << dg.esize() << endl;
         dg.get_keyaction();

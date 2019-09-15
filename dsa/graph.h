@@ -58,12 +58,12 @@ class udGraph
 {
 protected:
     int nv, connected_cnt, stp_unique;
-    unordered_set<edge *> __MEM_OF_EDGE;
-    unordered_map<int, vector<int>> posv, pre, prev, post;
+    unordered_set<edge *> __memoryOEdge;
+    unordered_map<int, set<int>> posv, pre, prev, post;
     vector<vector<edge *>> matrix;
     vector<int> indeg, outdeg, vis, cost1, cost2, tmppath;
     vector<vector<int>> respath;
-    priority_queue<edge *, vector<edge *>, __cmp1> e_pq;
+
     unordered_map<int, vector<edge *>> mpOfedge;
     spanningTree stp;
     void __clear_buf()
@@ -117,6 +117,9 @@ protected:
         stp.clear();
         edge *e;
         int v1, v2;
+        priority_queue<edge *, vector<edge *>, __cmp1> e_pq;
+        for (auto &peq : __memoryOEdge)
+            e_pq.push(peq);
         while (e_pq.size() && stp.esize() < nv - 1)
         {
             e = e_pq.top(), e_pq.pop();
@@ -162,7 +165,7 @@ protected:
         }
         __clear_buf();
     }
-    void __getPath2(int walk, int &src)
+    void __getPathByPre(int walk, int &src)
     {
         tmppath.push_back(walk);
         if (walk == src)
@@ -171,7 +174,7 @@ protected:
             return;
         }
         for (auto j : pre[walk])
-            __getPath2(j, src);
+            __getPathByPre(j, src);
         tmppath.pop_back();
     }
 
@@ -225,9 +228,8 @@ public:
                 if (g[i][j] != INF_VAL)
                 {
                     matrix[j][i] = matrix[i][j] = new edge(g[i][j], i, j);
-                    posv[i].push_back(j), posv[j].push_back(i);
-                    e_pq.push(matrix[i][j]);
-                    __MEM_OF_EDGE.insert(matrix[i][j]);
+                    posv[i].insert(j), posv[j].insert(i);
+                    __memoryOEdge.insert(matrix[i][j]);
                     mpOfedge[matrix[i][j]->w1].push_back(matrix[i][j]);
                 }
         }
@@ -241,8 +243,6 @@ public:
     }
     inline void clear()
     {
-        while (e_pq.size())
-            this->e_pq.pop();
         this->cost1.clear(), this->cost2.clear();
         this->connected_cnt = 0;
         this->indeg.clear();
@@ -257,9 +257,9 @@ public:
         this->stp.clear();
         this->tmppath.clear();
         this->vis.clear();
-        for (auto node : __MEM_OF_EDGE)
+        for (auto node : __memoryOEdge)
             delete node;
-        this->__MEM_OF_EDGE.clear();
+        this->__memoryOEdge.clear();
     }
     inline int stpsum()
     {
@@ -293,12 +293,12 @@ public:
                     {
                         cost[w] = matrix[v][w]->w1 + cost[v];
                         //cost2[w] = matrix[v][w]->w2 + cost2[v];
-                        pre[w].clear(), pre[w].push_back(v);
+                        pre[w].clear(), pre[w].insert(v);
                         pathsum[w] = pathsum[v];
                     }
                     else if (matrix[v][w]->w1 + cost[v] == cost[w]) //2.
                     {
-                        pre[w].push_back(v);
+                        pre[w].insert(v);
                         pathsum[w] += pathsum[v];
                     }
                     //or 1.same
@@ -316,7 +316,7 @@ public:
             }
         }
         tmppath.clear(), respath.clear();
-        __getPath2(dst, src);
+        __getPathByPre(dst, src);
         reverse(respath.begin(), respath.end());
     }
     bool stpUnique()
@@ -355,7 +355,7 @@ public:
     {
         f ? __kruskal() : __prim();
     }
-    void rand_acyclic(int n_)
+    void rand_acyclic_init(int n_)
     {
         srand(time(NULL));
         vector<vector<int>> g(n_, vector<int>(n_, INF_VAL));
@@ -367,7 +367,7 @@ public:
         init(g);
     }
     inline int vsize() { return this->nv; }
-    inline int esize() { return __MEM_OF_EDGE.size(); }
+    inline int esize() { return __memoryOEdge.size(); }
     ~udGraph()
     {
         this->clear();
@@ -393,7 +393,7 @@ protected:
         }
         o.push_back(v_id);
     }
-    void __getPath(int walk, int &dst)
+    void __getPathByPost(int walk, int &dst)
     {
         if (walk == dst)
         {
@@ -405,7 +405,7 @@ protected:
         {
             tmppath.push_back(w);
             _total_cost += matrix[walk][w]->w1;
-            __getPath(w, dst);
+            __getPathByPost(w, dst);
             _total_cost -= matrix[walk][w]->w1;
             tmppath.pop_back();
         }
@@ -439,6 +439,11 @@ protected:
     {
         if (aoe.size())
             return;
+        if (!_acyclic)
+        {
+            cout << "the Graph is Cyclic !\n";
+            return;
+        }
         v_early = v_late = vector<int>(nv, 0);
         for (int walk : __top_order)
         {
@@ -454,32 +459,35 @@ protected:
                 mint = min(v_late[post] - this->matrix[walk][post]->w1, mint);
             v_late[walk] = mint;
         }
-        vector<int> ksrc, kdst;
-        for (auto &e : __MEM_OF_EDGE)
+        set<int> ksrc, kdst;
+        for (auto &e : __memoryOEdge)
         {
             aoe[e].first = v_early[e->v1];
             aoe[e].second = v_late[e->v2] - e->w1;
 
             if (aoe[e].first == aoe[e].second)
             {
-                this->post[e->v1].push_back(e->v2);
+                this->post[e->v1].insert(e->v2);
                 if (_src.count(e->v1))
-                    ksrc.push_back(e->v1);
+                    ksrc.insert(e->v1);
                 if (_dst.count(e->v2))
-                    kdst.push_back(e->v2);
+                    kdst.insert(e->v2);
             }
         }
-        for (auto &v : post)
-        {
-            sort(v.second.begin(), v.second.end());
-        }
-        sort(ksrc.begin(), ksrc.end()), sort(kdst.begin(), kdst.end());
+        cout << "src: \n";
+        for (auto i : ksrc)
+            cout << i << " ";
+        cout << endl;
+        cout << "dst: \n";
+        for (auto i : kdst)
+            cout << i << " ";
+        cout << endl;
         for (auto s : ksrc)
         {
             for (auto d : kdst)
             {
                 tmppath.push_back(s);
-                __getPath(s, d);
+                __getPathByPost(s, d);
                 tmppath.pop_back();
             }
         }
@@ -557,13 +565,32 @@ public:
             printf("The No.%d Key Actions' Path Length Is -> %d\n", i + 1, rescost[i]);
         }
     }
-    void rand_acyclic(int n_, int sparse_level, int weight_range)
+    void rand_acyclic_init(int n_, int sparse_level, int weight_range)
     {
         vector<vector<int>> g(n_, vector<int>(n_, INF_VAL));
         for (int i = 0; i < n_; i++)
         {
             for (int j = i + 1; j < n_; j++)
                 g[i][j] = rand() % sparse_level ? INF_VAL : rand() % weight_range + 1;
+        }
+        init(g);
+        __clear_buf();
+    }
+    void rand_init(int n_, int sparse_level, int weight_range)
+    {
+        vector<vector<int>> g(n_, vector<int>(n_, INF_VAL));
+        for (int i = 0; i < n_; i++)
+        {
+            for (int j = i + 1; j < n_; j++)
+            {
+                if (rand() % sparse_level)
+                {
+                    g[i][j] = INF_VAL;
+                    g[j][i] = rand() % sparse_level ? INF_VAL : rand() % weight_range + 1;
+                }
+                else
+                    g[i][j] = rand() % weight_range + 1;
+            }
         }
         init(g);
         __clear_buf();
@@ -578,9 +605,9 @@ public:
                 if (g[i][j] != INF_VAL)
                 {
                     matrix[i][j] = new edge(g[i][j], i, j);
-                    prev[j].push_back(i), posv[i].push_back(j);
+                    prev[j].insert(i), posv[i].insert(j);
                     indeg[j]++, outdeg[i]++;
-                    __MEM_OF_EDGE.insert(matrix[i][j]);
+                    __memoryOEdge.insert(matrix[i][j]);
                 }
         }
         for (int i = 0; i < nv; i++)
@@ -590,14 +617,6 @@ public:
             if (outdeg[i] == 0)
                 _dst.insert(i);
         }
-        cout << "src: \n";
-        for (auto i : _src)
-            cout << i << " ";
-        cout << endl;
-        cout << "dst: \n";
-        for (auto i : _dst)
-            cout << i << " ";
-        cout << endl;
         connected();
         __top_sort();
         __clear_buf();

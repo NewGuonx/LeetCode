@@ -13,18 +13,27 @@ int main(int argc, char const *argv[])
     //test();
     srand(time(NULL));
     int b[SIZE];
-    //generate(b, b + SIZE, [&]() { return rand() % 100; });
-    iota(b, b + SIZE, 1);
-    vector<int> a(b, b + SIZE), c = a, d;
+
     clock_t startTime, endTime;
     startTime = clock();
-
-    while (getchar() != '0')
+    int n;
+    string s;
+    //iota(b, b + n, 1);
+    while (cin >> n && n != 0)
     {
+        generate(b, b + n, [&]() { return rand() % 100; });
+        vector<int> a(b, b + n), c = a, d;
         AVLTree<int> ax;
         ax.build(a);
-        cout << ax.size() << endl;
-        //ax.printTree();
+        cin >> s;
+        while (s != "q")
+        {
+            if (s[0] == 'v')
+                ax.printTreeVertical();
+            else
+                ax.printTreeHorizon();
+            cin >> s;
+        }
     }
 
     endTime = clock();

@@ -10,7 +10,7 @@ using namespace std;
 namespace newtree
 {
 #define MAXCOL 1000
-#define MAXROW 20
+#define MAXROW 100000
 
 template <typename T>
 struct BinNode
@@ -38,7 +38,7 @@ class BinTree
 {
 protected:
     BinNode<T> *_ROOT, *tp1;
-    unordered_set<BinNode<T> *> __MEM_OF_NODE;
+    unordered_set<BinNode<T> *> __memoryONode;
     deque<BinNode<T> *> q, nexq;
     int _cnt;
     bool isunique; // pre post build
@@ -70,7 +70,7 @@ protected:
             return nullptr;
         int i = lo;
         BinNode<T> *node = new BinNode<T>(preorder[root]);
-        __MEM_OF_NODE.insert(node);
+        __memoryONode.insert(node);
         table[preorder[root]] = node;
         node->parent = p;
         __updatedepth(node);
@@ -81,7 +81,7 @@ protected:
         __updateheight(node);
         return node;
     }
-    void __print(BinNode<T> *root, int root_x, int root_y, int interval)
+    void __print_horizon(BinNode<T> *root, int root_x, int root_y, int interval)
     {
         if (!root)
             return;
@@ -94,8 +94,24 @@ protected:
             disp_buf[root_x + 1][root_y - (interval + 1) / 2] = "/ ";
         if (root->right)
             disp_buf[root_x + 1][root_y + (interval + 1) / 2] = " \\";
-        __print(root->left, root_x + 2, left_child, (interval >> 1));
-        __print(root->right, root_x + 2, right_child, (interval >> 1));
+        __print_horizon(root->left, root_x + 2, left_child, (interval >> 1));
+        __print_horizon(root->right, root_x + 2, right_child, (interval >> 1));
+    }
+    void __print_vertical(BinNode<T> *root, int root_x, int root_y, int interval)
+    { // root_y = 0;
+        if (!root)
+            return;
+        int left_child = root_x + interval, right_child = root_x - interval;
+        string tp = to_string(root->val);
+        while (tp.size() < 4)
+            tp.push_back(' ');
+        disp_buf[root_x][root_y] = tp;
+        if (root->left)
+            disp_buf[root_x + (interval + 1) / 2][root_y + 1] = " \\  ";
+        if (root->right)
+            disp_buf[root_x - (interval + 1) / 2][root_y + 1] = " /  ";
+        __print_vertical(root->left, left_child, root_y + 2, (interval >> 1));
+        __print_vertical(root->right, right_child, root_y + 2, (interval >> 1));
     }
     BinNode<T> *__build_ip(int root, int lo, int hi, BinNode<T> *p)
     {
@@ -103,7 +119,7 @@ protected:
             return nullptr;
         int i = lo;
         BinNode<T> *node = new BinNode<T>(postorder[root]);
-        __MEM_OF_NODE.insert(node);
+        __memoryONode.insert(node);
         table[postorder[root]] = node;
         node->parent = p;
         __updatedepth(node);
@@ -119,7 +135,7 @@ protected:
         if (leftOfpre > rightOfpre || leftOfpost > rightOfpost)
             return nullptr;
         BinNode<T> *root = new BinNode<T>(preorder[leftOfpre]);
-        __MEM_OF_NODE.insert(root);
+        __memoryONode.insert(root);
         if (leftOfpre == rightOfpre)
             return root;
         int leftSubVal = preorder[leftOfpre + 1], i, sub_cnt;
@@ -160,7 +176,7 @@ protected:
                     p->left = nullptr;
                 if (root == p->right)
                     p->right = nullptr;
-                this->__MEM_OF_NODE.erase(root);
+                this->__memoryONode.erase(root);
                 delete root;
             }
             return;
@@ -237,17 +253,17 @@ protected:
             return;
         __del_allSub(root->left);
         __del_allSub(root->right);
-        this->__MEM_OF_NODE.erase(root);
+        this->__memoryONode.erase(root);
         delete root;
     }
-    bool __TreeIdentical(BinNode<T> *T1, BinNode<T> *T2)
+    bool __treeIdentical(BinNode<T> *T1, BinNode<T> *T2)
     {
         if (!T1 && !T2)
             return 1;
         if (!T1 || !T2 || T1->val != T2->val)
             return 0;
-        bool lf = __TreeIdentical(T1->left, T2->left);
-        bool rf = __TreeIdentical(T1->right, T2->right);
+        bool lf = __treeIdentical(T1->left, T2->left);
+        bool rf = __treeIdentical(T1->right, T2->right);
         return lf && rf;
     }
     bool __TreeSimilar(BinNode<T> *T1, BinNode<T> *T2)
@@ -396,29 +412,44 @@ public:
         this->q.clear(), this->nexq.clear();
         this->_cnt = 0;
     }
-    void printTree()
+    void printTreeHorizon()
     {
         if (!this->_ROOT)
             return;
         printf("🌲\n");
-        this->disp_buf = vector<vector<string>>(MAXROW, vector<string>(MAXCOL, string(2, ' ')));
-        __print(this->_ROOT, 0, pow(2, this->_ROOT->height - 1) - 1, pow(2, this->_ROOT->height - 2));
-        int n = this->_ROOT->height * 2 - 1, i, j;
-        for (i = 0; i < n; ++i)
+        if (this->_cnt > (1 << 8) - 1)
         {
-            j = MAXCOL;
-            while (j > 0 && disp_buf[i][--j] == "  ")
-                ;
-            disp_buf[i][j + 1] = "!";
+            cout << " Too Many Node !\n";
+            return;
         }
+        this->disp_buf = vector<vector<string>>(40, vector<string>(MAXCOL, string(2, ' ')));
+        __print_horizon(this->_ROOT, 0, pow(2, this->_ROOT->height - 1) - 1, pow(2, this->_ROOT->height - 2));
+        int n = this->_ROOT->height * 2 - 1, i, j, breadth = pow(2, this->_ROOT->height) + 1;
         for (i = 0; i < n; ++i)
         {
-            for (j = 0; j < MAXCOL; ++j)
-            {
-                if (disp_buf[i][j] == "!")
-                    break;
+            for (j = 0; j < breadth; ++j)
                 cout << disp_buf[i][j];
-            }
+            cout << endl;
+        }
+        printf("🌲\n");
+    }
+    void printTreeVertical()
+    {
+        if (!this->_ROOT)
+            return;
+        if (this->_cnt > (1 << 15) - 1)
+        {
+            cout << " Too Many Node !\n";
+            return;
+        }
+        printf("🌲\n");
+        this->disp_buf = vector<vector<string>>(MAXROW, vector<string>(40, string(4, ' ')));
+        __print_vertical(this->_ROOT, pow(2, this->_ROOT->height - 1) - 1, 0, pow(2, this->_ROOT->height - 2));
+        int i, j, breadth = pow(2, this->_ROOT->height) + 1, n = this->_ROOT->height * 2 - 1;
+        for (i = 0; i < breadth; ++i)
+        {
+            for (j = 0; j < n; ++j)
+                cout << disp_buf[i][j];
             cout << endl;
         }
         printf("🌲\n");
@@ -433,7 +464,7 @@ public:
         if (a.size() - 1 < id)
             return nullptr;
         BinNode<T> *v = new BinNode<T>(a[id]);
-        __MEM_OF_NODE.insert(v);
+        __memoryONode.insert(v);
         v->left = __buildcmp(id * 2 + 1, a);
         v->right = __buildcmp(id * 2 + 2, a);
         return v;
@@ -497,7 +528,7 @@ public:
     }
     inline bool identical(BinTree<T> T2)
     {
-        return __TreeIdentical(this->_ROOT, T2.root());
+        return __treeIdentical(this->_ROOT, T2.root());
     }
     inline bool symmetric()
     {
@@ -566,9 +597,9 @@ public:
         _cnt = 0;
         isunique = 1;
         disp_buf.clear();
-        for (auto &p : __MEM_OF_NODE)
+        for (auto &p : __memoryONode)
             delete p;
-        __MEM_OF_NODE.clear();
+        __memoryONode.clear();
     }
 
     template <class _Function>
@@ -707,14 +738,14 @@ protected:
         {
             BinNode<T> *v = new BinNode<T>(i);
             pq.push_back(v);
-            this->__MEM_OF_NODE.insert(v);
+            this->__memoryONode.insert(v);
         }
         while (pq.size() > 1)
         {
             v = pq.top(), pq.pop_front();
             w = pq.top(), pq.pop_front();
             root = new BinNode<T>(v->val + w->val);
-            this->__MEM_OF_NODE.insert(root);
+            this->__memoryONode.insert(root);
             root->left = v, root->right = w;
             pq.push_back(root);
         }
@@ -788,7 +819,7 @@ protected:
         if (!root)
         {
             root = new BinNode<T>(v);
-            this->__MEM_OF_NODE.insert(root);
+            this->__memoryONode.insert(root);
             this->_cnt++;
             return;
         }
@@ -797,7 +828,7 @@ protected:
         if (x)
             return;
         x = new BinNode<T>(v);
-        this->__MEM_OF_NODE.insert(x);
+        this->__memoryONode.insert(x);
         v < this->_last->val ? this->_last->left = x : this->_last->right = x;
         this->_cnt++;
     }
@@ -832,7 +863,7 @@ protected:
             {
                 tmp = root;
                 root = root->left ? root->left : root->right;
-                BinTree<T>::__MEM_OF_NODE.erase(tmp);
+                BinTree<T>::__memoryONode.erase(tmp);
                 delete tmp;
             }
         }
@@ -959,7 +990,7 @@ protected:
         if (!root)
         {
             root = new BinNode<T>(val);
-            this->__MEM_OF_NODE.insert(root);
+            this->__memoryONode.insert(root);
             root->parent = p;
             this->_cnt++;
             return;
@@ -1020,7 +1051,7 @@ protected:
             {
                 tmp = root;
                 root = root->left ? root->left : root->right;
-                BinTree<T>::__MEM_OF_NODE.erase(tmp);
+                BinTree<T>::__memoryONode.erase(tmp);
                 delete tmp;
             }
         }
