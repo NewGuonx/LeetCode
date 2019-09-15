@@ -66,7 +66,7 @@ protected:
 
     unordered_map<int, vector<edge *>> mpOfedge;
     spanningTree stp;
-    void __clear_buf()
+    void __restore_buf()
     {
         fill(vis.begin(), vis.end(), 0);
         fill(cost1.begin(), cost1.end(), 0);
@@ -143,7 +143,7 @@ protected:
     }
     void __bfs(int src)
     {
-        __clear_buf();
+        __restore_buf();
         int layer = 0, v;
         queue<int> q, nexq;
         q.push(src);
@@ -163,7 +163,7 @@ protected:
             layer++;
             swap(q, nexq);
         }
-        __clear_buf();
+        __restore_buf();
     }
     void __getPathByPre(int walk, int &src)
     {
@@ -393,6 +393,27 @@ protected:
         }
         o.push_back(v_id);
     }
+    void __dfs_nonrecur(int src)
+    {
+        stack<int> sk;
+        sk.push(src);
+        int v;
+        vis[v] = 1;
+        //function(v);
+        while (sk.size())
+        {
+            v = sk.top(), sk.pop();
+            //function(v);
+            for (auto w : posv[v])
+            {
+                if (vis[w])
+                    continue;
+                vis[w] = 1;
+                sk.push(w);
+            }
+        }
+        __restore_buf();
+    }
     void __getPathByPost(int walk, int &dst)
     {
         if (walk == dst)
@@ -433,7 +454,7 @@ protected:
         }
         _acyclic = __top_order.size() == nv;
         __intop_order.insert(__intop_order.end(), __top_order.rbegin(), __top_order.rend());
-        __clear_buf();
+        __restore_buf();
     }
     void __key_action()
     {
@@ -519,14 +540,14 @@ public:
                 __dfs(i, ord);
             }
         }
-        __clear_buf();
+        __restore_buf();
     }
     void toporder(vector<int> &ord)
     {
         if (!_acyclic)
             return;
         ord = __top_order;
-        __clear_buf();
+        __restore_buf();
     }
     bool istoporder(vector<int> &ord)
     {
@@ -540,13 +561,13 @@ public:
             for (auto w : posv[V])
                 In[w]--;
         }
-        __clear_buf();
+        __restore_buf();
         return true;
     }
     void topsort()
     {
         __top_sort();
-        __clear_buf();
+        __restore_buf();
     }
     inline void get_keyaction()
     {
@@ -574,7 +595,7 @@ public:
                 g[i][j] = rand() % sparse_level ? INF_VAL : rand() % weight_range + 1;
         }
         init(g);
-        __clear_buf();
+        __restore_buf();
     }
     void rand_init(int n_, int sparse_level, int weight_range)
     {
@@ -593,7 +614,7 @@ public:
             }
         }
         init(g);
-        __clear_buf();
+        __restore_buf();
     }
     void init(vector<vector<int>> &g)
     {
@@ -619,7 +640,7 @@ public:
         }
         connected();
         __top_sort();
-        __clear_buf();
+        __restore_buf();
     }
     ~dGraph()
     {
