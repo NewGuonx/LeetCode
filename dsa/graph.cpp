@@ -1,7 +1,7 @@
 // author - newguo@sonaspy.cn
 // coding - utf_8
 
-#define SIZE 100
+#define SIZE 20
 #include <bits/stdc++.h>
 #include "dsa.h"
 #define test() freopen("in", "r", stdin)
@@ -31,10 +31,16 @@ int main(int argc, char const *argv[])
     while ((tt = getchar()) != '0')
     {
         dGraph dg;
-        dg.rand_acyclic_init(n, 10, 11);
+        dg.rand_init(n, 10, 11);
         cout << "acyclic " << dg.acyclic() << endl;
         cout << "num of edge is -> " << dg.esize() << endl;
-        dg.get_keyaction();
+        cin >> a1;
+        while (a1 != -1)
+        {
+            dg.getCycle(a1);
+            cin >> a1;
+        }
+        //dg.get_keyaction();
         //cout << dg.istoporder(ord) << endl;
     }
 

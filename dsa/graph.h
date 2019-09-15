@@ -57,12 +57,19 @@ public:
 class udGraph
 {
 protected:
+    void output_vec(vector<int> &a)
+    {
+        cout << a[0];
+        for (int i = 1; i < a.size(); i++)
+            cout << " -> " << a[i];
+        cout << endl;
+    }
     int nv, connected_cnt, stp_unique;
     unordered_set<edge *> __memoryOEdge;
     unordered_map<int, set<int>> posv, pre, prev, post;
     vector<vector<edge *>> matrix;
     vector<int> indeg, outdeg, vis, cost1, cost2, tmppath;
-    vector<vector<int>> respath;
+    vector<vector<int>> _key_path, _res_path;
 
     unordered_map<int, vector<edge *>> mpOfedge;
     spanningTree stp;
@@ -170,7 +177,7 @@ protected:
         tmppath.push_back(walk);
         if (walk == src)
         {
-            respath.push_back(tmppath);
+            _res_path.push_back(tmppath);
             return;
         }
         for (auto j : pre[walk])
@@ -253,7 +260,7 @@ public:
         this->posv.clear();
         this->prev.clear();
         this->pre.clear();
-        this->respath.clear();
+        this->_key_path.clear();
         this->stp.clear();
         this->tmppath.clear();
         this->vis.clear();
@@ -315,9 +322,9 @@ public:
                 }
             }
         }
-        tmppath.clear(), respath.clear();
+        tmppath.clear(), _key_path.clear();
         __getPathByPre(dst, src);
-        reverse(respath.begin(), respath.end());
+        reverse(_key_path.begin(), _key_path.end());
     }
     bool stpUnique()
     {
@@ -419,7 +426,7 @@ protected:
         if (walk == dst)
         {
             rescost.push_back(_total_cost);
-            respath.push_back(tmppath);
+            _key_path.push_back(tmppath);
             return;
         }
         for (auto w : post[walk])
@@ -564,6 +571,32 @@ public:
         __restore_buf();
         return true;
     }
+    void __dfs_cycle(int v1, int v2)
+    {
+        vis[v1] = 1;
+        tmppath.push_back(v1);
+        if (v1 == v2 && tmppath.size() > 1)
+        {
+            output_vec(tmppath);
+            vis[v1] = 0;
+            tmppath.pop_back();
+            return;
+        }
+        for (auto w : posv[v1])
+        {
+            if (!vis[w] || w == v2)
+                __dfs_cycle(w, v2);
+        }
+        vis[v1] = 0;
+        tmppath.pop_back();
+    }
+    void getCycle(int v0)
+    {
+        printf("Cycles Go Through Vertex No.%d:\n", v0);
+        __dfs_cycle(v0, v0);
+        cout << endl;
+        __restore_buf();
+    }
     void topsort()
     {
         __top_sort();
@@ -579,10 +612,7 @@ public:
         }
         for (int i = 0; i < rescost.size(); i++)
         {
-            cout << respath[i][0];
-            for (int j = 1; j < respath[i].size(); j++)
-                cout << " -> " << respath[i][j];
-            cout << endl;
+            output_vec(_key_path[i]);
             printf("The No.%d Key Actions' Path Length Is -> %d\n", i + 1, rescost[i]);
         }
     }

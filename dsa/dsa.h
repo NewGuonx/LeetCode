@@ -5,10 +5,6 @@
 #include "sort.h"
 #include "linear.h"
 #include "graph.h"
-void output_vec(vector<int> & a){
-    for(auto i : a)
-        cout << i << " ";
-    cout << endl;
-}
+#include "set_union.h"
 
 #endif

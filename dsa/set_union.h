@@ -1,5 +1,10 @@
 #include <bits/stdc++.h>
 using namespace std;
+
+
+#ifndef __SET_UNION__
+#define __SET_UNION__
+
 class _set_union
 {
 public:
@@ -38,3 +43,5 @@ public:
         return cnt == 1;
     }
 };
+
+#endif
