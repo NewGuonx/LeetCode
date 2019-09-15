@@ -7,7 +7,7 @@ using namespace std;
 
 #ifndef __NEW_TREE__
 #define __NEW_TREE__
-namespace newtree
+namespace dsa
 {
 #define MAXCOL 1000
 #define MAXROW 100000
@@ -412,6 +412,7 @@ public:
         this->q.clear(), this->nexq.clear();
         this->_cnt = 0;
     }
+    inline bool const empty() { return this->_root == nullptr; }
     void printTreeHorizon()
     {
         if (!this->_ROOT)
@@ -1115,12 +1116,27 @@ public:
 };
 
 template <typename T>
-struct BNode
+struct BTNode
 {
-    T val;
-    BNode *left, *right, *parent;
-    int height, depth, ltag, rtag;
-    BNode(T x) : val(x), left(nullptr), right(nullptr), parent(nullptr), height(1), depth(1), ltag(0), rtag(0) {}
+    vector<T> key;
+    vector<BTNode<T> *> child; // always more 1 item than key
+    BTNode<T> *parent = nullptr;
+    BTNode()
+    {
+        parent = nullptr;
+        child.push_back(1, nullptr);
+    }
+    BTNode(T x, BTNode<T> *lc = nullptr, BTNode<T> *rc = nullptr)
+    {
+        parent = nullptr;
+        key.push_back(x);
+        child.resize(2);
+        child[0] = lc, child[1] = rc;
+        if (lc)
+            lc->parent = this;
+        if (rc)
+            rc->parent = this;
+    }
     bool inline is_l()
     {
         return parent && parent->left == this;
@@ -1133,6 +1149,57 @@ struct BNode
     {
         return parent == nullptr;
     }
+};
+
+template <typename T>
+class BTree
+{
+protected:
+    int _size, _order;
+    BTNode<T> *_root, *_last;
+    unordered_set<BTNode<T> *> _memoryOfNode;
+    void __overfSolution(BTNode<T> *v)
+    {
+    }
+    void __underfSolution(BTNode<T> *v)
+    {
+    }
+
+public:
+    BTree<T>(int order = 3) : _order(order), _size(0)
+    {
+        _root = new BTNode<T>();
+        _memoryOfNode.insert(_root);
+    }
+    ~BTree()
+    {
+        this->clear();
+    }
+    inline void const clear()
+    {
+        for (auto &ptr : _memoryOfNode)
+            delete ptr;
+        _memoryOfNode.clear();
+    }
+    inline int const order() { return this->_order; }
+    inline int const size() { return this->_size; }
+    inline BTNode<T> *root() { return this->_root; }
+    inline bool const empty() { return this->_root == nullptr; }
+    BTNode<T> *search(const T &x)
+    {
+        BTNode<T> *v = _root;
+        _last = nullptr;
+        while (v)
+        {
+            auto it = lower_bound(v->key.begin(), v->key.end());
+            if (it != v->key.end() && *it == x)
+                return v;
+            _last = v, v = v->child[it - v->key.begin()];
+        }
+        return nullptr;
+    }
+    bool insert(const T &x) {}
+    bool erase(const T &x) {}
 };
 
 template <typename T>
@@ -1206,5 +1273,5 @@ public:
     }
 };
 
-}; // namespace newtree
+}; // namespace dsa
 #endif

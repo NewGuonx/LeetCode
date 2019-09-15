@@ -8,7 +8,7 @@ using namespace std;
 #ifndef __NEW_GRAPH__
 #define __NEW_GRAPH__
 
-namespace newgraph
+namespace dsa
 {
 #define MAXVSIZE 1111
 #define INF_VAL 1 << 30
@@ -678,6 +678,6 @@ public:
     }
 };
 
-}; // namespace newgraph
+}; // namespace dsa
 
 #endif

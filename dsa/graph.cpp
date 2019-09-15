@@ -5,7 +5,7 @@
 #include <bits/stdc++.h>
 #include "dsa.h"
 #define test() freopen("in", "r", stdin)
-using namespace newgraph;
+using namespace dsa;
 using namespace std;
 
 int main(int argc, char const *argv[])

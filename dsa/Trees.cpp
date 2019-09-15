@@ -5,7 +5,7 @@
 
 #define SIZE 100000
 using namespace std;
-using namespace newtree;
+using namespace dsa;
 
 int main(int argc, char const *argv[])
 {

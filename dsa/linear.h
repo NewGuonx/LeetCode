@@ -3,7 +3,7 @@
 
 #include <bits/stdc++.h>
 using namespace std;
-namespace newlinear
+namespace dsa
 {
 struct ListNode
 {
@@ -161,26 +161,6 @@ bool list_move(T *lo, T *hi, int offset, bool left)
         return true;
     }
     return false;
-}
-
-template <class T>
-T *_lower_bound(T *lo, T *hi, const T &val)
-{ // binary search
-    int len = hi - lo, half_len;
-    T *mid;
-    while (len > 0)
-    {
-        half_len = len >> 1;
-        mid = lo + half_len;
-        if (*mid < val) // (<=) upperbound
-        {
-            lo = mid + 1;
-            len -= half_len + 1;
-        }
-        else
-            len = half_len;
-    }
-    return lo;
 }
 
 template <class T>
@@ -667,4 +647,4 @@ bool bracketMatch(char *f)
 6.表达式处理完毕后 output rest in stack
 (before start, put a guard in stack ,pri = -1(lowest) );
 */
-}; // namespace newlinear
+}; // namespace dsa

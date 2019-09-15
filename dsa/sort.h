@@ -6,7 +6,7 @@
 using namespace std;
 #ifndef __NEW_SORT__
 #define __NEW_SORT__
-namespace newsort
+namespace dsa
 {
 template <typename T>
 static void HeapSort(T *lo, T *hi)
@@ -335,6 +335,6 @@ static void tableSort(T *a, T *b)
 //     quickSort(left, mid - 1);
 //     quickSort(mid, right);
 // }
-}; // namespace newsort
+}; // namespace dsa
 
 #endif
