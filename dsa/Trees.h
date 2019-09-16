@@ -833,14 +833,16 @@ protected:
         v < this->_last->val ? this->_last->left = x : this->_last->right = x;
         this->_cnt++;
     }
-    bool __judge_avl(binode<T> *root)
+    bool __judge_avl(binode<T> *root, binode<T> *&p)
     {
         if (!root)
             return true;
-        bool f1 = __judge_avl(root->left);
-        bool f2 = __judge_avl(root->right);
-        this->__updateheight(root);
-        return f1 && f2 && abs(this->__factor(root)) < 2;
+        bool f1, f2, f;
+        f1 = __judge_avl(root->left, p);
+        f = abs(this->__factor(root)) < 2 && (p == nullptr || p->val < root->val);
+        p = root;
+        f2 = __judge_avl(root->right, p);
+        return f1 && f2 & f;
     }
 
     binode<T> *__delete(binode<T> *&root, T x)
@@ -880,7 +882,8 @@ public:
     }
     bool balanced()
     {
-        return __judge_avl(this->_ROOT);
+        binode<T> *p = nullptr;
+        return __judge_avl(this->_ROOT, p);
     }
     void erase(const T &val)
     {
@@ -891,7 +894,7 @@ public:
     {
         __insert(this->_ROOT, val);
     }
-    binode<T> *locate(const T &e)
+    binode<T> *search(const T &e)
     {
         return __search(this->_ROOT, e);
     }
@@ -916,7 +919,7 @@ public:
     }
     inline bool exist(const T &e)
     {
-        return locate(e);
+        return search(e);
     }
     ~bstree() { this->clear(); }
 };
@@ -1105,7 +1108,7 @@ protected:
 //     }
 
 // public:
-//     binode<T> *locate(const T &e)
+//     binode<T> *search(const T &e)
 //     {
 //         this->_last = nullptr;
 //         binode<T> *p = this->__search(this->_ROOT, e);
