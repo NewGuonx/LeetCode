@@ -23,7 +23,7 @@ int main(int argc, char const *argv[])
     {
         generate(b, b + n, [&]() { return rand() % 100; });
         vector<int> a(b, b + n), c = a, d;
-        AVLTree<int> ax;
+        avltree<int> ax;
         ax.build(a);
         cin >> s;
         while (s != "q")

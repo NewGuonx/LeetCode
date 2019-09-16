@@ -13,12 +13,12 @@ namespace dsa
 #define MAXROW 100000
 
 template <typename T>
-struct BinNode
+struct binode
 {
     T val;
-    BinNode *left, *right, *parent;
+    binode *left, *right, *parent;
     int height, depth, ltag, rtag;
-    BinNode(T x) : val(x), left(nullptr), right(nullptr), parent(nullptr), height(1), depth(1), ltag(0), rtag(0) {}
+    binode(T x) : val(x), left(nullptr), right(nullptr), parent(nullptr), height(1), depth(1), ltag(0), rtag(0) {}
     bool inline is_l()
     {
         return parent && parent->left == this;
@@ -34,42 +34,42 @@ struct BinNode
 };
 
 template <typename T>
-class BinTree
+class bintree
 {
 protected:
-    BinNode<T> *_ROOT, *tp1;
-    unordered_set<BinNode<T> *> __memoryONode;
-    deque<BinNode<T> *> q, nexq;
+    binode<T> *_ROOT, *tp1;
+    unordered_set<binode<T> *> __memoryONode;
+    deque<binode<T> *> q, nexq;
     int _cnt;
     bool isunique; // pre post build
     vector<vector<string>> disp_buf;
-    inline int __height(BinNode<T> *root) { return root == nullptr ? 0 : root->height; }
-    inline int __depth(BinNode<T> *root) { return root == nullptr ? 0 : root->depth; }
-    inline void __updatedepth(BinNode<T> *root) { root->depth = __depth(root->parent) + 1; }
-    inline void __updateheight(BinNode<T> *root) { root->height = max(__height(root->left), __height(root->right)) + 1; }
-    inline int __factor(BinNode<T> *root) { return __height(root->left) - __height(root->right); }
-    inline BinNode<T> *__getmax(BinNode<T> *root)
+    inline int __height(binode<T> *root) { return root == nullptr ? 0 : root->height; }
+    inline int __depth(binode<T> *root) { return root == nullptr ? 0 : root->depth; }
+    inline void __updatedepth(binode<T> *root) { root->depth = __depth(root->parent) + 1; }
+    inline void __updateheight(binode<T> *root) { root->height = max(__height(root->left), __height(root->right)) + 1; }
+    inline int __factor(binode<T> *root) { return __height(root->left) - __height(root->right); }
+    inline binode<T> *__getmax(binode<T> *root)
     {
         while (root->right)
             root = root->right;
         return root;
     }
-    inline BinNode<T> *__getmin(BinNode<T> *root)
+    inline binode<T> *__getmin(binode<T> *root)
     {
         while (root->left)
             root = root->left;
         return root;
     }
-    inline void __updateROOT(BinNode<T> *root)
+    inline void __updateROOT(binode<T> *root)
     {
         this->_ROOT = root;
     }
-    BinNode<T> *__build_pi(int root, int lo, int hi, BinNode<T> *p)
+    binode<T> *__build_pi(int root, int lo, int hi, binode<T> *p)
     {
         if (hi < lo)
             return nullptr;
         int i = lo;
-        BinNode<T> *node = new BinNode<T>(preorder[root]);
+        binode<T> *node = new binode<T>(preorder[root]);
         __memoryONode.insert(node);
         table[preorder[root]] = node;
         node->parent = p;
@@ -81,7 +81,7 @@ protected:
         __updateheight(node);
         return node;
     }
-    void __print_horizon(BinNode<T> *root, int root_x, int root_y, int interval)
+    void __print_horizon(binode<T> *root, int root_x, int root_y, int interval)
     {
         if (!root)
             return;
@@ -97,7 +97,7 @@ protected:
         __print_horizon(root->left, root_x + 2, left_child, (interval >> 1));
         __print_horizon(root->right, root_x + 2, right_child, (interval >> 1));
     }
-    void __print_vertical(BinNode<T> *root, int root_x, int root_y, int interval)
+    void __print_vertical(binode<T> *root, int root_x, int root_y, int interval)
     { // root_y = 0;
         if (!root)
             return;
@@ -113,12 +113,12 @@ protected:
         __print_vertical(root->left, left_child, root_y + 2, (interval >> 1));
         __print_vertical(root->right, right_child, root_y + 2, (interval >> 1));
     }
-    BinNode<T> *__build_ip(int root, int lo, int hi, BinNode<T> *p)
+    binode<T> *__build_ip(int root, int lo, int hi, binode<T> *p)
     {
         if (hi < lo)
             return nullptr;
         int i = lo;
-        BinNode<T> *node = new BinNode<T>(postorder[root]);
+        binode<T> *node = new binode<T>(postorder[root]);
         __memoryONode.insert(node);
         table[postorder[root]] = node;
         node->parent = p;
@@ -130,11 +130,11 @@ protected:
         __updateheight(node);
         return node;
     }
-    BinNode<T> *__build_pp(int leftOfpre, int rightOfpre, int leftOfpost, int rightOfpost)
+    binode<T> *__build_pp(int leftOfpre, int rightOfpre, int leftOfpost, int rightOfpost)
     {
         if (leftOfpre > rightOfpre || leftOfpost > rightOfpost)
             return nullptr;
-        BinNode<T> *root = new BinNode<T>(preorder[leftOfpre]);
+        binode<T> *root = new binode<T>(preorder[leftOfpre]);
         __memoryONode.insert(root);
         if (leftOfpre == rightOfpre)
             return root;
@@ -155,16 +155,16 @@ protected:
         }
         return root;
     }
-    BinNode<T> *__invert(BinNode<T> *root)
+    binode<T> *__invert(binode<T> *root)
     {
         if (!root)
             return nullptr;
-        BinNode<T> *tmp = __invert(root->right);
+        binode<T> *tmp = __invert(root->right);
         root->right = __invert(root->left);
         root->left = tmp;
         return root;
     }
-    void __del_leaf(BinNode<T> *&root, BinNode<T> *p)
+    void __del_leaf(binode<T> *&root, binode<T> *p)
     {
         if (!root)
             return;
@@ -221,9 +221,9 @@ protected:
         this->q.clear();
         return cnt;
     }
-    void __del_targetSub(BinNode<T> *root, int target)
+    void __del_targetSub(binode<T> *root, int target)
     {
-        BinNode<T> *x;
+        binode<T> *x;
         if (root->val == target)
         {
             __del_allSub(root);
@@ -247,7 +247,7 @@ protected:
         }
         this->q.clear();
     }
-    void __del_allSub(BinNode<T> *root)
+    void __del_allSub(binode<T> *root)
     {
         if (!root)
             return;
@@ -256,7 +256,7 @@ protected:
         this->__memoryONode.erase(root);
         delete root;
     }
-    bool __treeIdentical(BinNode<T> *T1, BinNode<T> *T2)
+    bool __treeIdentical(binode<T> *T1, binode<T> *T2)
     {
         if (!T1 && !T2)
             return 1;
@@ -266,7 +266,7 @@ protected:
         bool rf = __treeIdentical(T1->right, T2->right);
         return lf && rf;
     }
-    bool __TreeSimilar(BinNode<T> *T1, BinNode<T> *T2)
+    bool __TreeSimilar(binode<T> *T1, binode<T> *T2)
     {
         if (!T1 && !T2)
             return 1;
@@ -274,7 +274,7 @@ protected:
             return 0;
         return __TreeSimilar(T1->left, T2->left) && __TreeSimilar(T1->right, T2->right);
     }
-    void __tree2Infix(BinNode<string> *root, int depth, string &s)
+    void __tree2Infix(binode<string> *root, int depth, string &s)
     {
         if (!root)
             return;
@@ -292,7 +292,7 @@ protected:
         }
     }
     template <class _Function>
-    void __recur_pre(BinNode<T> *root, _Function f)
+    void __recur_pre(binode<T> *root, _Function f)
     {
         if (!root)
             return;
@@ -301,7 +301,7 @@ protected:
         __recur_pre(root->right, f);
     }
     template <class _Function>
-    void __recur_in(BinNode<T> *root, _Function f)
+    void __recur_in(binode<T> *root, _Function f)
     {
         if (!root)
             return;
@@ -310,7 +310,7 @@ protected:
         __recur_in(root->right, f);
     }
     template <class _Function>
-    void __recur_post(BinNode<T> *root, _Function f)
+    void __recur_post(binode<T> *root, _Function f)
     {
         if (!root)
             return;
@@ -319,7 +319,7 @@ protected:
         f(root);
     }
 
-    void __InThread(BinNode<T> *root, BinNode<T> *pre)
+    void __InThread(binode<T> *root, binode<T> *pre)
     {
         if (root)
         {
@@ -357,7 +357,7 @@ protected:
         }
         return res;
     }
-    double __infix_val(BinNode<string> *root)
+    double __infix_val(binode<string> *root)
     {
         if (!root)
             return 0;
@@ -391,7 +391,7 @@ protected:
         return last + level - 1;
     }
 
-    void __update_member(BinNode<T> *root, BinNode<T> *p)
+    void __update_member(binode<T> *root, binode<T> *p)
     {
         if (!root)
             return;
@@ -403,9 +403,9 @@ protected:
     }
 
 public:
-    unordered_map<T, BinNode<T> *> table;
+    unordered_map<T, binode<T> *> table;
     vector<T> preorder, inorder, postorder;
-    BinTree()
+    bintree()
     {
         this->_ROOT = nullptr;
         this->isunique = true;
@@ -456,15 +456,15 @@ public:
         printf("🌲\n");
     }
 
-    inline BinNode<T> *root()
+    inline binode<T> *root()
     {
         return this->_ROOT;
     }
-    BinNode<T> *__buildcmp(int id, vector<int> &a)
+    binode<T> *__buildcmp(int id, vector<int> &a)
     {
         if (a.size() - 1 < id)
             return nullptr;
-        BinNode<T> *v = new BinNode<T>(a[id]);
+        binode<T> *v = new binode<T>(a[id]);
         __memoryONode.insert(v);
         v->left = __buildcmp(id * 2 + 1, a);
         v->right = __buildcmp(id * 2 + 2, a);
@@ -523,11 +523,11 @@ public:
         this->__update_member(_ROOT, nullptr);
     }
     inline int diam() { return __diameter(); }
-    inline bool similar(BinTree<T> T2)
+    inline bool similar(bintree<T> T2)
     {
         return __TreeSimilar(this->_ROOT, T2.root());
     }
-    inline bool identical(BinTree<T> T2)
+    inline bool identical(bintree<T> T2)
     {
         return __treeIdentical(this->_ROOT, T2.root());
     }
@@ -537,14 +537,14 @@ public:
             return true;
         return __TreeSimilar(this->_ROOT->left, this->_ROOT->right);
     }
-    BinNode<T> *convert2list()
+    binode<T> *convert2list()
     {
         if (!this->_ROOT)
             return;
-        vector<BinNode<T> *> ls;
-        intrav([&](BinNode<T> *v) { ls.push_back(v); });
+        vector<binode<T> *> ls;
+        intrav([&](binode<T> *v) { ls.push_back(v); });
         auto p1 = ls.begin(), p2 = ls.begin() + 1;
-        BinNode<T> *head = *p1;
+        binode<T> *head = *p1;
         for (; p2 != ls.end(); p1++, p2++)
         {
             (*p1)->left = nullptr;
@@ -573,7 +573,7 @@ public:
     {
         if (!this->_ROOT)
             return true;
-        BinNode<T> *root = this->_ROOT;
+        binode<T> *root = this->_ROOT;
         this->q.push_back(root);
         while (this->q.size())
         {
@@ -621,11 +621,11 @@ public:
     void inTrav()
     {
         vector<T> resSeq;
-        stack<BinNode<T> *> s;
-        BinNode<T> *root = this->_ROOT;
+        stack<binode<T> *> s;
+        binode<T> *root = this->_ROOT;
         if (!root)
             return;
-        BinNode<T> *p = root;
+        binode<T> *p = root;
         while (s.size() || p)
         {
             while (p)
@@ -646,10 +646,10 @@ public:
     void preTrav()
     {
         vector<T> resSeq;
-        BinNode<T> *root = this->_ROOT;
+        binode<T> *root = this->_ROOT;
         if (!root)
             return;
-        stack<BinNode<T> *> s;
+        stack<binode<T> *> s;
         s.push(root);
         while (s.size())
         {
@@ -665,10 +665,10 @@ public:
     void postTrav()
     {
         vector<T> resSeq;
-        BinNode<T> *root = this->_ROOT;
+        binode<T> *root = this->_ROOT;
         if (!root)
             return;
-        stack<pair<BinNode<T> *, bool>> s;
+        stack<pair<binode<T> *, bool>> s;
         s.push(make_pair(root, false));
         bool isMyTurn;
         while (s.size())
@@ -687,7 +687,7 @@ public:
         }
         this->postorder = resSeq;
     }
-    BinNode<T> *get_LCA(BinNode<T> *p, BinNode<T> *q)
+    binode<T> *get_LCA(binode<T> *p, binode<T> *q)
     {
         while (p->depth > q->depth)
             p = p->parent;
@@ -699,7 +699,7 @@ public:
     }
 
     // T1 <-> T2  convertable, left <-> right;
-    int Isomprphic(BinNode<T> *root1, BinNode<T> *root2)
+    int Isomprphic(binode<T> *root1, binode<T> *root2)
     {
         if (!root1 && !root2)
             return 1;
@@ -714,7 +714,7 @@ public:
         else
             return Isomprphic(root1->left, root2->right) && Isomprphic(root1->right, root2->left);
     }
-    ~BinTree()
+    ~bintree()
     {
         this->clear();
     }
@@ -723,21 +723,21 @@ public:
 // 后缀表达式 -> exp_tree
 // stack : node*; 遇 oprand: build node then push, 遇operator: pop 2 item become its childs, then push, 2nd_pop item is left.
 template <typename T>
-class Huffman : public BinTree<T>
+class huffman : public bintree<T>
 {
 protected:
     int _wpl;
     struct __cmp
     {
-        bool operator()(const BinNode<T> *a, const BinNode<T> *b) const { return a->val > b->val; }
+        bool operator()(const binode<T> *a, const binode<T> *b) const { return a->val > b->val; }
     };
     void __build_hfm(vector<int> &data)
     {
-        priority_queue<BinNode<T> *, vector<BinNode<T> *>, __cmp> pq;
-        BinNode<T> *v, *w, *root;
+        priority_queue<binode<T> *, vector<binode<T> *>, __cmp> pq;
+        binode<T> *v, *w, *root;
         for (auto i : data)
         {
-            BinNode<T> *v = new BinNode<T>(i);
+            binode<T> *v = new binode<T>(i);
             pq.push_back(v);
             this->__memoryONode.insert(v);
         }
@@ -745,14 +745,14 @@ protected:
         {
             v = pq.top(), pq.pop_front();
             w = pq.top(), pq.pop_front();
-            root = new BinNode<T>(v->val + w->val);
+            root = new binode<T>(v->val + w->val);
             this->__memoryONode.insert(root);
             root->left = v, root->right = w;
             pq.push_back(root);
         }
         this->__updateROOT(root);
     }
-    void __wpl(BinNode<T> *root)
+    void __wpl(binode<T> *root)
     {
         if (!root)
             return;
@@ -763,7 +763,7 @@ protected:
     };
 
 public:
-    Huffman()
+    huffman()
     {
         _wpl = -1;
     }
@@ -775,7 +775,7 @@ public:
     }
     inline void clear()
     {
-        BinTree<T>::clear();
+        bintree<T>::clear();
         _wpl = 0;
     }
     int wpl()
@@ -784,28 +784,28 @@ public:
             __wpl(this->_ROOT);
         return _wpl;
     }
-    ~Huffman() { this->clear(); }
+    ~huffman() { this->clear(); }
 };
 template <typename T>
-class BST : public BinTree<T>
+class bstree : public bintree<T>
 {
 protected:
-    BinNode<T> *_last;
-    inline void __attAsL(BinNode<T> *&p, BinNode<T> *&lc)
+    binode<T> *_last;
+    inline void __attAsL(binode<T> *&p, binode<T> *&lc)
     {
         p->left = lc;
         if (lc)
             lc->parent = p;
     }
-    inline void __attAsR(BinNode<T> *&p, BinNode<T> *&rc)
+    inline void __attAsR(binode<T> *&p, binode<T> *&rc)
     {
         p->right = rc;
         if (rc)
             rc->parent = p;
     }
-    BinNode<T> *__search(BinNode<T> *&root, const T &v)
+    binode<T> *__search(binode<T> *&root, const T &v)
     {
-        BinNode<T> *x = root;
+        binode<T> *x = root;
         while (x)
         {
             if (x->val == v)
@@ -815,25 +815,25 @@ protected:
         }
         return x;
     }
-    void __insert(BinNode<T> *&root, const T &v)
+    void __insert(binode<T> *&root, const T &v)
     {
         if (!root)
         {
-            root = new BinNode<T>(v);
+            root = new binode<T>(v);
             this->__memoryONode.insert(root);
             this->_cnt++;
             return;
         }
         this->_last = nullptr;
-        BinNode<T> *x = __search(root, v);
+        binode<T> *x = __search(root, v);
         if (x)
             return;
-        x = new BinNode<T>(v);
+        x = new binode<T>(v);
         this->__memoryONode.insert(x);
         v < this->_last->val ? this->_last->left = x : this->_last->right = x;
         this->_cnt++;
     }
-    bool __judge_avl(BinNode<T> *root)
+    bool __judge_avl(binode<T> *root)
     {
         if (!root)
             return true;
@@ -843,7 +843,7 @@ protected:
         return f1 && f2 && abs(this->__factor(root)) < 2;
     }
 
-    BinNode<T> *__delete(BinNode<T> *&root, T x)
+    binode<T> *__delete(binode<T> *&root, T x)
     {
         if (!root)
             return nullptr;
@@ -853,7 +853,7 @@ protected:
             root->right = __delete(root->right, x);
         else
         {
-            BinNode<T> *tmp;
+            binode<T> *tmp;
             if (root->left && root->right)
             {
                 tmp = this->__getmin(root->right);
@@ -864,7 +864,7 @@ protected:
             {
                 tmp = root;
                 root = root->left ? root->left : root->right;
-                BinTree<T>::__memoryONode.erase(tmp);
+                bintree<T>::__memoryONode.erase(tmp);
                 delete tmp;
             }
         }
@@ -891,19 +891,19 @@ public:
     {
         __insert(this->_ROOT, val);
     }
-    BinNode<T> *locate(const T &e)
+    binode<T> *locate(const T &e)
     {
         this->_last = nullptr;
         return __search(this->_ROOT, e);
     }
     inline void clear()
     {
-        BinTree<T>::clear();
+        bintree<T>::clear();
         this->_last = nullptr;
     }
-    BinNode<T> *findLCA(T v1, T v2)
+    binode<T> *findLCA(T v1, T v2)
     {
-        BinNode<T> *walk = this->_ROOT;
+        binode<T> *walk = this->_ROOT;
         while (walk)
         {
             if (v1 < walk->val && v2 < walk->val)
@@ -919,11 +919,11 @@ public:
     {
         return locate(e);
     }
-    ~BST() { this->clear(); }
+    ~bstree() { this->clear(); }
 };
 
 template <typename T>
-class AVLTree : public BST<T>
+class avltree : public bstree<T>
 {
 public:
     void build(vector<T> &a)
@@ -943,16 +943,16 @@ public:
         __insert(this->_ROOT, val, nullptr);
         this->__update_status();
     }
-    inline void clear() { BST<T>::clear(); }
-    ~AVLTree()
+    inline void clear() { bstree<T>::clear(); }
+    ~avltree()
     {
         this->clear();
     }
 
 protected:
-    inline void _zig(BinNode<T> *&root)
+    inline void _zig(binode<T> *&root)
     {
-        BinNode<T> *tmp = root->left;
+        binode<T> *tmp = root->left;
         root->left = tmp->right;
         if (tmp->right)
             tmp->right->parent = root;
@@ -963,9 +963,9 @@ protected:
         this->__updateheight(tmp);
         root = tmp;
     }
-    inline void _zag(BinNode<T> *&root)
+    inline void _zag(binode<T> *&root)
     {
-        BinNode<T> *tmp = root->right;
+        binode<T> *tmp = root->right;
         root->right = tmp->left;
         if (tmp->left)
             tmp->left->parent = root;
@@ -976,21 +976,21 @@ protected:
         this->__updateheight(tmp);
         root = tmp;
     }
-    inline void _zigzag(BinNode<T> *&root)
+    inline void _zigzag(binode<T> *&root)
     {
         _zag(root->left);
         _zig(root);
     }
-    inline void _zagzig(BinNode<T> *&root)
+    inline void _zagzig(binode<T> *&root)
     {
         _zig(root->right);
         _zag(root);
     }
-    void __insert(BinNode<T> *&root, const T &val, BinNode<T> *p)
+    void __insert(binode<T> *&root, const T &val, binode<T> *p)
     {
         if (!root)
         {
-            root = new BinNode<T>(val);
+            root = new binode<T>(val);
             this->__memoryONode.insert(root);
             root->parent = p;
             this->_cnt++;
@@ -1012,7 +1012,7 @@ protected:
         }
     }
 
-    BinNode<T> *__delete(BinNode<T> *&root, const T &val)
+    binode<T> *__delete(binode<T> *&root, const T &val)
     {
         if (!root)
             return nullptr;
@@ -1032,7 +1032,7 @@ protected:
         }
         else // find it
         {
-            BinNode<T> *tmp;
+            binode<T> *tmp;
             if (root->right && root->left)
             {
                 if (this->__factor(root) > 0)
@@ -1052,7 +1052,7 @@ protected:
             {
                 tmp = root;
                 root = root->left ? root->left : root->right;
-                BinTree<T>::__memoryONode.erase(tmp);
+                bintree<T>::__memoryONode.erase(tmp);
                 delete tmp;
             }
         }
@@ -1060,73 +1060,73 @@ protected:
     }
 };
 
-template <class T>
-class splayTree : public BST<T>
-{ // still bug there
-protected:
-    BinNode<T> *__splay(BinNode<T> *&v)
-    {
-        if (!v)
-            return nullptr;
-        BinNode<T> *p, *g, *gg;
-        while (1)
-        {
-            p = v->parent;
-            if (!p)
-                break;
-            g = p->parent;
-            if (!g)
-                break;
-            if (v->is_l())
-                if (p->is_l())
-                    this->__attAsL(g, p->right), this->__attAsL(p, v->right), this->__attAsR(p, g), this->__attAsR(v, p);
-                else
-                    this->__attAsL(p, v->right), this->__attAsR(g, v->left), this->__attAsL(v, g), this->__attAsR(v, p);
-            else if (p->is_r())
-                this->__attAsR(g, p->left), this->__attAsR(p, v->left), this->__attAsL(p, g), this->__attAsL(v, p);
-            else
-                this->__attAsR(p, v->left), this->__attAsL(g, v->right), this->__attAsR(v, g), this->__attAsL(v, p);
-            if (!gg)
-                v->parent = nullptr;
-            else
-                g == gg->left ? this->__attAsL(gg, v) : this->__attAsR(gg, v);
-            this->__updateheight(g), this->__updateheight(p), this->__updateheight(v);
-        }
-        p = v->parent;
-        if (p)
-        {
-            if (v->is_l())
-                this->__attAsL(p, v->right), this->__attAsR(v, p);
-            else
-                this->__attAsR(p, v->left), this->__attAsL(v, p);
-            this->__updateheight(p), this->__updateheight(v);
-        }
-        v->parent = nullptr;
-        return v;
-    }
+// template <class T>
+// class splayTree : public bstree<T>
+// { // still bug there
+// protected:
+//     binode<T> *__splay(binode<T> *&v)
+//     {
+//         if (!v)
+//             return nullptr;
+//         binode<T> *p, *g, *gg;
+//         while (1)
+//         {
+//             p = v->parent;
+//             if (!p)
+//                 break;
+//             g = p->parent;
+//             if (!g)
+//                 break;
+//             if (v->is_l())
+//                 if (p->is_l())
+//                     this->__attAsL(g, p->right), this->__attAsL(p, v->right), this->__attAsR(p, g), this->__attAsR(v, p);
+//                 else
+//                     this->__attAsL(p, v->right), this->__attAsR(g, v->left), this->__attAsL(v, g), this->__attAsR(v, p);
+//             else if (p->is_r())
+//                 this->__attAsR(g, p->left), this->__attAsR(p, v->left), this->__attAsL(p, g), this->__attAsL(v, p);
+//             else
+//                 this->__attAsR(p, v->left), this->__attAsL(g, v->right), this->__attAsR(v, g), this->__attAsL(v, p);
+//             if (!gg)
+//                 v->parent = nullptr;
+//             else
+//                 g == gg->left ? this->__attAsL(gg, v) : this->__attAsR(gg, v);
+//             this->__updateheight(g), this->__updateheight(p), this->__updateheight(v);
+//         }
+//         p = v->parent;
+//         if (p)
+//         {
+//             if (v->is_l())
+//                 this->__attAsL(p, v->right), this->__attAsR(v, p);
+//             else
+//                 this->__attAsR(p, v->left), this->__attAsL(v, p);
+//             this->__updateheight(p), this->__updateheight(v);
+//         }
+//         v->parent = nullptr;
+//         return v;
+//     }
 
-public:
-    BinNode<T> *locate(const T &e)
-    {
-        this->_last = nullptr;
-        BinNode<T> *p = this->__search(this->_ROOT, e);
-        this->_ROOT = __splay(p ? p : this->_last);
-        return this->_ROOT;
-    }
-};
+// public:
+//     binode<T> *locate(const T &e)
+//     {
+//         this->_last = nullptr;
+//         binode<T> *p = this->__search(this->_ROOT, e);
+//         this->_ROOT = __splay(p ? p : this->_last);
+//         return this->_ROOT;
+//     }
+// };
 
 template <typename T>
-struct BTNode
+struct bnode
 {
     vector<T> key;
-    vector<BTNode<T> *> child; // always more 1 item than key
-    BTNode<T> *parent = nullptr;
-    BTNode()
+    vector<bnode<T> *> child; // always more 1 item than key
+    bnode<T> *parent = nullptr;
+    bnode()
     {
         parent = nullptr;
         child.push_back(nullptr);
     }
-    BTNode(T x, BTNode<T> *lc = nullptr, BTNode<T> *rc = nullptr)
+    bnode(T x, bnode<T> *lc = nullptr, bnode<T> *rc = nullptr)
     {
         parent = nullptr;
         key.push_back(x);
@@ -1137,33 +1137,22 @@ struct BTNode
         if (rc)
             rc->parent = this;
     }
-    bool inline is_l()
-    {
-        return parent && parent->left == this;
-    }
-    bool inline is_r()
-    {
-        return parent && parent->right == this;
-    }
-    bool inline isroot()
-    {
-        return parent == nullptr;
-    }
 };
 
 template <typename T>
-class BTree
+class btree
 {
 protected:
     int _size, _order;
-    BTNode<T> *_root, *_last;
-    unordered_set<BTNode<T> *> _memoryOfNode;
-    void __overfSolution(BTNode<T> *v)
+    bnode<T> *_root, *_last;
+    unordered_set<bnode<T> *> _memoryOfNode;
+
+    void __overfSolution(bnode<T> *v)
     {
-        if (v->key.size() <= _order - 1)
+        if (v->key.size() + 1 <= _order)
             return;
         int s = _order / 2;
-        BTNode<T> *u = new BTNode<T>();
+        bnode<T> *u = new bnode<T>();
 
         // right split [0 1 2 |<3>| 4 5]
         u->child.insert(u->child.begin(), v->child.begin() + s + 1, v->child.begin() + _order + 1);
@@ -1177,10 +1166,10 @@ protected:
             for (int j = 0; j < _order - s; j++)
                 u->child[j]->parent = u;
         }
-        BTNode<T> *p = v->parent;
+        bnode<T> *p = v->parent;
         if (!p)
         {
-            p = new BTNode<T>();
+            p = new bnode<T>();
             _root = p;
             p->child[0] = v;
             v->parent = p;
@@ -1195,10 +1184,100 @@ protected:
         __overfSolution(p);
     }
 
-    void __underfSolution(BTNode<T> *v)
+    void __underfSolution(bnode<T> *v)
     {
+        if ((_order + 1) / 2 <= v->child.size())
+            return;
+        bnode<T> *p = v->parent;
+        if (!p)
+        {
+            if (v->key.empty() && v->child[0])
+            {
+                _root = v->child[0];
+                _root->parent = nullptr;
+                v->child[0] = nullptr;
+                _memoryOfNode.erase(v);
+                delete v;
+            }
+            return;
+        }
+        int r = -1;
+        while (p->child[++r] != v)
+            ;
+        if (0 < r)
+        {
+            bnode<T> *ls = p->child[r - 1];
+            if ((_order + 1) / 2 < ls->child.size())
+            {
+                v->key.insert(v->key.begin(), p->key[r - 1]);
+                p->key[r - 1] = ls->key.back();
+                ls->key.pop_back();
+                v->child.insert(v->child.begin(), ls->child.back());
+                ls->child.pop_back();
+                if (v->child[0])
+                    v->child[0]->parent = v;
+                return;
+            }
+        }
+        if (r < p->key.size())
+        {
+            bnode<T> *rs = p->child[r + 1];
+            if ((_order + 1) / 2 < rs->child.size())
+            {
+                v->key.insert(v->key.end(), p->key[r]);
+                p->key[r] = rs->key.front();
+                rs->key.erase(rs->key.begin());
+                v->child.push_back(rs->child.front());
+                rs->child.erase(rs->child.begin());
+                if (v->child.back())
+                    v->child.back()->parent = v;
+                return;
+            }
+        }
+        if (0 < r)
+        {
+            bnode<T> *ls = p->child[r - 1];
+            ls->key.push_back(p->key[r - 1]);
+            p->key.erase(p->key.begin() + r - 1);
+            p->child.erase(p->child.begin() + r);
+
+            ls->child.push_back(v->child.front());
+            v->child.erase(v->child.begin());
+            if (ls->child.back())
+                ls->child.back()->parent = ls;
+            ls->key.insert(ls->key.end(), v->key.begin(), v->key.end());
+            ls->child.insert(ls->child.end(), v->child.begin(), v->child.end());
+            for (auto &lsch : ls->child)
+                if (lsch)
+                    lsch->parent = ls;
+            _memoryOfNode.erase(v);
+            delete v;
+        }
+        else
+        {
+            bnode<T> *rs = p->child[r + 1];
+            rs->key.insert(rs->key.begin(), p->key[r]);
+            p->key.erase(p->key.begin() + r);
+            p->child.erase(p->child.begin() + r);
+
+            rs->child.insert(rs->child.begin(), v->child.back());
+            v->child.pop_back();
+
+            if (rs->child.front())
+                rs->child.front()->parent = rs;
+            rs->key.insert(rs->key.begin(), v->key.begin(), v->key.end());
+            rs->child.insert(rs->child.begin(), v->child.begin(), v->child.end());
+
+            for (auto &rsch : rs->child)
+                if (rsch)
+                    rsch->parent = rs;
+            _memoryOfNode.erase(v);
+            delete v;
+        }
+        __underfSolution(p);
     }
-    inline void _output_node(BTNode<T> *v)
+
+    inline void _output_node(bnode<T> *v)
     {
         cout << " ( ";
         for (auto i : v->key)
@@ -1207,19 +1286,19 @@ protected:
     }
 
 public:
-    BTree<T>(int order = 3) : _order(order), _size(0)
+    btree<T>(int order = 3) : _order(order), _size(0)
     {
-        _root = new BTNode<T>();
+        _root = new bnode<T>();
         _memoryOfNode.insert(_root);
     }
-    ~BTree()
+    ~btree()
     {
         this->clear();
     }
     inline void printTree()
     {
-        BTNode<T> *v = _root;
-        queue<BTNode<T> *> q, nexq;
+        bnode<T> *v = _root;
+        queue<bnode<T> *> q, nexq;
         q.push(v);
         int le = 1;
         while (q.size())
@@ -1246,30 +1325,48 @@ public:
     }
     inline int const order() { return this->_order; }
     inline int const size() { return this->_size; }
-    inline BTNode<T> *root() { return this->_root; }
+    inline bnode<T> *root() { return this->_root; }
     inline bool const empty() { return this->_root == nullptr; }
-    BTNode<T> *search(const T &x)
+    bnode<T> *search(const T &x)
     {
-        BTNode<T> *v = _root;
+        bnode<T> *v = _root;
         _last = nullptr;
         while (v)
         {
             auto it = lower_bound(v->key.begin(), v->key.end(), x);
+            int r = it - v->key.begin();
             if (it != v->key.end() && *it == x)
                 return v;
-            _last = v, v = v->child[it - v->key.begin()];
+            _last = v, v = v->child[r];
         }
         return nullptr;
     }
+    void __inorder(bnode<T> * root)
+    {
+        if (!root)
+            return;
+        int i;
+        for (i = 0; i < root->key.size(); i++)
+        {
+            __inorder(root->child[i]);
+            cout << root->key[i] << " -> ";
+        }
+        for (; i < root->child.size(); i++)
+            __inorder(root->child[i]);
+    }
+
+    void inorder()
+    {
+        __inorder(this->_root);
+        cout << "nullptr\n";
+    }
     bool insert(const T &x)
     {
-        BTNode<T> *v = search(x);
+        bnode<T> *v = search(x);
         if (v)
             return 0;
         int r = upper_bound(_last->key.begin(), _last->key.end(), x) - _last->key.begin();
         _last->key.insert(_last->key.begin() + r, x);
-        if (_last->child.size() < r + 1)
-            _last->child.resize(r + 1);
         _last->child.insert(_last->child.begin() + r + 1, nullptr);
         _size++;
         __overfSolution(_last); // key size <= m - 1
@@ -1277,18 +1374,17 @@ public:
     }
     bool erase(const T &x)
     {
-        BTNode<T> *v = search(x);
+        bnode<T> *v = search(x);
         if (!v)
             return false;
         int r = lower_bound(v->key.begin(), v->key.end(), x) - v->key.begin();
         if (v->child.front())
         {
-            BTNode<T> *u = v->child[r + 1];
+            bnode<T> *u = v->child[r + 1];
             while (u->child[0])
                 u = u->child[0];
             v->key[r] = u->key[0];
-            v = u;
-            r = 0;
+            v = u, r = 0;
         }
         v->key.erase(v->key.begin() + r);
         v->child.erase(v->child.begin() + 1 + r);
@@ -1299,7 +1395,16 @@ public:
 };
 
 template <typename T>
-class Heap
+class rbtree
+{
+protected:
+
+public:
+
+};
+
+template <typename T>
+class heap
 {
     // data[1....n] data[0] = INT_MAX
 protected:
@@ -1330,7 +1435,7 @@ protected:
     }
 
 public:
-    Heap()
+    heap()
     {
         _size = 0;
     }
