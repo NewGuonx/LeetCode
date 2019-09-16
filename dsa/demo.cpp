@@ -6,7 +6,13 @@
 #define test() freopen("in", "r", stdin)
 
 using namespace std;
+template <typename T>
+class sd;
 
+template <typename T>
+class sd
+{
+};
 int main(int argc, char const *argv[])
 {
     /* code */
@@ -15,7 +21,7 @@ int main(int argc, char const *argv[])
     vector<int> a(b, b + 6), c(b, b + 6), d(b, b + 6), f(6);
 
     f.insert(f.begin(), *(a.begin() + 6));
-    cout << f.size();
+    cout << (b[0] += 0 ? 1 : 0);
 
     return 0;
 }

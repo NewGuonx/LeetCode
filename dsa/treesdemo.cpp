@@ -12,19 +12,17 @@ int main(int argc, char const *argv[])
     /* code */
     //test();
     srand(time(NULL));
-    int b[SIZE];
-
+    int b[SIZE], n = SIZE;
+    generate(b, b + n, [&]() { return rand() % 100; });
+    vector<int> a(b, b + n);
+    string s;
+    //iota(b, b + n, 1);
     clock_t startTime, endTime;
     startTime = clock();
-    int n = SIZE;
-    string s;
-    generate(b, b + n, [&]() { return rand() % 100; });
-    //iota(b, b + n, 1);
-    vector<int> a(b, b + n);
+
     avltree<int> ax;
     ax.build(a);
     ax.printTreeHorizon();
-    cout << ax.balanced() << endl;
     // while (cin >> n && n != 0)
     // {
 
