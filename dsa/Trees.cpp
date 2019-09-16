@@ -18,10 +18,10 @@ int main(int argc, char const *argv[])
     startTime = clock();
     int n;
     string s;
-    //iota(b, b + n, 1);
     while (cin >> n && n != 0)
     {
         generate(b, b + n, [&]() { return rand() % 100; });
+        //iota(b, b + n, 1);
         vector<int> a(b, b + n), c = a, d;
         avltree<int> ax;
         ax.build(a);

@@ -805,6 +805,7 @@ protected:
     }
     binode<T> *__search(binode<T> *&root, const T &v)
     {
+        this->_last = nullptr;
         binode<T> *x = root;
         while (x)
         {
@@ -824,7 +825,6 @@ protected:
             this->_cnt++;
             return;
         }
-        this->_last = nullptr;
         binode<T> *x = __search(root, v);
         if (x)
             return;
@@ -893,7 +893,6 @@ public:
     }
     binode<T> *locate(const T &e)
     {
-        this->_last = nullptr;
         return __search(this->_ROOT, e);
     }
     inline void clear()
@@ -1149,14 +1148,14 @@ protected:
 
     void __overfSolution(bnode<T> *v)
     {
-        if (v->key.size() + 1 <= _order)
+        if (v->key.size() <= _order - 1)
             return;
         int s = _order / 2;
         bnode<T> *u = new bnode<T>();
 
         // right split [0 1 2 |<3>| 4 5]
-        u->child.insert(u->child.begin(), v->child.begin() + s + 1, v->child.begin() + _order + 1);
-        v->child.erase(v->child.begin() + s + 1, v->child.begin() + _order + 1);
+        u->child.insert(u->child.begin(), v->child.begin() + s + 1, v->child.end());
+        v->child.erase(v->child.begin() + s + 1, v->child.end());
 
         u->key.insert(u->key.begin(), v->key.begin() + s + 1, v->key.begin() + _order);
         v->key.erase(v->key.begin() + s + 1, v->key.begin() + _order);
@@ -1186,11 +1185,16 @@ protected:
 
     void __underfSolution(bnode<T> *v)
     {
-        if ((_order + 1) / 2 <= v->child.size())
+        //cout << "s-1\n";
+        if (!v)
             return;
+        if ((_order - 1) / 2 <= v->key.size())
+            return;
+        //cout << "s-2\n";
         bnode<T> *p = v->parent;
         if (!p)
         {
+            //cout << "s-3\n";
             if (v->key.empty() && v->child[0])
             {
                 _root = v->child[0];
@@ -1202,12 +1206,13 @@ protected:
             return;
         }
         int r = -1;
+        //cout << "sp" << endl;
         while (p->child[++r] != v)
             ;
         if (0 < r)
         {
             bnode<T> *ls = p->child[r - 1];
-            if ((_order + 1) / 2 < ls->child.size())
+            if ((_order - 1) / 2 < ls->key.size())
             {
                 v->key.insert(v->key.begin(), p->key[r - 1]);
                 p->key[r - 1] = ls->key.back();
@@ -1216,14 +1221,16 @@ protected:
                 ls->child.pop_back();
                 if (v->child[0])
                     v->child[0]->parent = v;
+                //cout << "s1" << endl;
                 return;
             }
         }
-        if (r < p->key.size())
+        if (r + 1 < p->child.size())
         {
             bnode<T> *rs = p->child[r + 1];
-            if ((_order + 1) / 2 < rs->child.size())
+            if ((_order - 1) / 2 < rs->key.size())
             {
+                //cout << "s2\n";
                 v->key.insert(v->key.end(), p->key[r]);
                 p->key[r] = rs->key.front();
                 rs->key.erase(rs->key.begin());
@@ -1236,6 +1243,7 @@ protected:
         }
         if (0 < r)
         {
+            //cout << "s3\n";
             bnode<T> *ls = p->child[r - 1];
             ls->key.push_back(p->key[r - 1]);
             p->key.erase(p->key.begin() + r - 1);
@@ -1255,6 +1263,7 @@ protected:
         }
         else
         {
+            //cout << "s4\n";
             bnode<T> *rs = p->child[r + 1];
             rs->key.insert(rs->key.begin(), p->key[r]);
             p->key.erase(p->key.begin() + r);
@@ -1271,10 +1280,12 @@ protected:
             for (auto &rsch : rs->child)
                 if (rsch)
                     rsch->parent = rs;
+
             _memoryOfNode.erase(v);
             delete v;
         }
         __underfSolution(p);
+        //cout << "end\n";
     }
 
     inline void _output_node(bnode<T> *v)
@@ -1283,6 +1294,20 @@ protected:
         for (auto i : v->key)
             cout << i << " ";
         cout << ") ";
+    }
+
+    void __inorder(bnode<T> *root)
+    {
+        if (!root)
+            return;
+        int i;
+        for (i = 0; i < root->key.size(); i++)
+        {
+            __inorder(root->child[i]);
+            cout << root->key[i] << " -> ";
+        }
+        for (; i < root->child.size(); i++)
+            __inorder(root->child[i]);
     }
 
 public:
@@ -1326,7 +1351,7 @@ public:
     inline int const order() { return this->_order; }
     inline int const size() { return this->_size; }
     inline bnode<T> *root() { return this->_root; }
-    inline bool const empty() { return this->_root == nullptr; }
+    inline bool const empty() { return !size(); }
     bnode<T> *search(const T &x)
     {
         bnode<T> *v = _root;
@@ -1341,24 +1366,15 @@ public:
         }
         return nullptr;
     }
-    void __inorder(bnode<T> * root)
-    {
-        if (!root)
-            return;
-        int i;
-        for (i = 0; i < root->key.size(); i++)
-        {
-            __inorder(root->child[i]);
-            cout << root->key[i] << " -> ";
-        }
-        for (; i < root->child.size(); i++)
-            __inorder(root->child[i]);
-    }
-
     void inorder()
     {
         __inorder(this->_root);
         cout << "nullptr\n";
+    }
+    void build(vector<T> &a)
+    {
+        for (auto &x : a)
+            insert(x);
     }
     bool insert(const T &x)
     {
@@ -1398,9 +1414,7 @@ template <typename T>
 class rbtree
 {
 protected:
-
 public:
-
 };
 
 template <typename T>
