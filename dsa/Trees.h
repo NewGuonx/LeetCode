@@ -121,8 +121,16 @@ struct binode
         return cnt;
     }
 };
-#define FromParentTo(x) \
+
+#define from_parent2(x) \
     ((x)->isroot() ? this->_root : ((x)->is_l() ? (x)->parent->left : (x)->parent->right))
+#define nodeBalanced(x) ((-2 < _factor(x)) && (_factor(x) < 2))
+// The higher of the two children
+#define tallerchild(x) ( \
+    _height((x)->lc) > _height((x)->rc) ? (x)->lc : (_height((x)->lc) < _height((x)->rc) ? (x)->rc : ((x)->is_l() ? (x)->lc : (x)->rc)))
+#define _height(p) ((p != nullptr) ? (p)->height : 0)
+#define _depth(p) ((p != nullptr) ? (p)->depth : 0)
+#define _factor(p) ((_height(p->left)) - (_height(p->right)))
 
 template <typename T>
 class bintree
@@ -137,8 +145,6 @@ protected:
     int _size;
     bool isunique; // pre post build
     vector<vector<string>> disp_buf;
-    static inline int _height(binode<T> *&opnv) { return opnv == nullptr ? 0 : opnv->height; }
-    static inline int _depth(binode<T> *&opnv) { return opnv == nullptr ? 0 : opnv->depth; }
     static inline void __updatedepth(binode<T> *&opnv) { opnv->depth = _depth(opnv->parent) + 1; }
     static inline void __updateheight(binode<T> *&opnv) { opnv->height = max(_height(opnv->left), _height(opnv->right)) + 1; }
     static inline void __updateheightabove(binode<T> *opnv)
@@ -154,7 +160,6 @@ protected:
         delete opnv;
         opnv = nullptr;
     }
-    static inline int _factor(binode<T> *&opnv) { return _height(opnv->left) - _height(opnv->right); }
     static void __update_member(binode<T> *opnv, binode<T> *p)
     {
         if (!opnv)
@@ -865,7 +870,7 @@ protected:
             return true;
         bool f1, f2, f;
         f1 = __judge_avl(opnv->left, p);
-        f = abs(_factor(opnv)) < 2 && (p == nullptr || p->val < opnv->val);
+        f = nodeBalanced(opnv) && (p == nullptr || p->val < opnv->val);
         p = opnv;
         f2 = __judge_avl(opnv->right, p);
         return f1 && f2 & f;
@@ -1068,15 +1073,15 @@ protected:
         {
             __insert(opnv->left, x, opnv);
             bintree<T>::__updateheight(opnv);
-            if (this->_factor(opnv) == 2)
-                this->_factor(opnv->left) == 1 ? _zig(opnv) : _zigzag(opnv);
+            if (_factor(opnv) == 2)
+                _factor(opnv->left) == 1 ? _zig(opnv) : _zigzag(opnv);
         }
         else if (x > opnv->val)
         {
             __insert(opnv->right, x, opnv);
             bintree<T>::__updateheight(opnv);
-            if (this->_factor(opnv) == -2)
-                this->_factor(opnv->right) == -1 ? _zag(opnv) : _zagzig(opnv);
+            if (_factor(opnv) == -2)
+                _factor(opnv->right) == -1 ? _zag(opnv) : _zagzig(opnv);
         }
     }
 
@@ -1088,22 +1093,22 @@ protected:
         {
             opnv->left = __erase(opnv->left, x);
             bintree<T>::__updateheight(opnv);
-            if (this->_factor(opnv) == -2)
-                this->_factor(opnv->right) == -1 ? _zag(opnv) : _zagzig(opnv);
+            if (_factor(opnv) == -2)
+                _factor(opnv->right) == -1 ? _zag(opnv) : _zagzig(opnv);
         }
         else if (opnv->val < x)
         {
             opnv->right = __erase(opnv->right, x);
             bintree<T>::__updateheight(opnv);
-            if (this->_factor(opnv) == 2)
-                (this->_factor(opnv->left) == 1) ? _zig(opnv) : _zigzag(opnv);
+            if (_factor(opnv) == 2)
+                (_factor(opnv->left) == 1) ? _zig(opnv) : _zigzag(opnv);
         }
         else // find it
         {
             binode<T> *tmp;
             if (opnv->right && opnv->left)
             {
-                if (this->_factor(opnv) > 0)
+                if (_factor(opnv) > 0)
                 {
                     tmp = opnv->precessor();
                     opnv->val = tmp->val;
