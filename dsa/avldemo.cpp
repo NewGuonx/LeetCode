@@ -3,7 +3,7 @@
 
 #include "dsa.h"
 
-#define SIZE 10
+#define SIZE 15
 using namespace std;
 using namespace dsa;
 
