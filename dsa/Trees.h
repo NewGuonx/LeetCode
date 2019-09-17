@@ -522,8 +522,8 @@ public:
             return;
         }
         this->disp_buf = vector<vector<string>>(40, vector<string>(MAXCOL, string(2, ' ')));
-        __print_horizon(this->_root, 0, pow(2, this->_root->height - 1) - 1, pow(2, this->_root->height - 2));
-        int n = this->_root->height * 2 - 1, i, j, breadth = pow(2, this->_root->height) + 1;
+        __print_horizon(this->_root, 0, pow(2, this->_root->height) - 1, pow(2, this->_root->height - 1));
+        int n = this->_root->height * 2 + 1, i, j, breadth = pow(2, this->_root->height + 1) + 1;
         for (i = 0; i < n; ++i)
         {
             for (j = 0; j < breadth; ++j)
@@ -543,8 +543,8 @@ public:
         }
         printf("🌲\n");
         this->disp_buf = vector<vector<string>>(MAXROW, vector<string>(40, string(4, ' ')));
-        __print_vertical(this->_root, pow(2, this->_root->height - 1) - 1, 0, pow(2, this->_root->height - 2));
-        int i, j, breadth = pow(2, this->_root->height) + 1, n = this->_root->height * 2 - 1;
+        __print_vertical(this->_root, pow(2, this->_root->height) - 1, 0, pow(2, this->_root->height - 1));
+        int i, j, breadth = pow(2, this->_root->height + 1) + 1, n = this->_root->height * 2 + 1;
         for (i = 0; i < breadth; ++i)
         {
             for (j = 0; j < n; ++j)
@@ -964,7 +964,7 @@ public:
         binode<T> *&w = search(x);
         if (w)
             return false;
-        w = new binode<T>(x);
+        w = new binode<T>(x, _last);
         this->_size++;
         this->__updateheightabove(w);
         return true;
@@ -1018,10 +1018,11 @@ public:
     // }
     bool insert(const T &x)
     {
-        binode<T> *&w = search(x);
+        binode<T> *&w = bstree<T>::search(x);
         if (w)
             return false;
-        binode<T> *tp_node = new binode<T>(x, this->_last), *g = this->_last;
+        w = new binode<T>(x, this->_last);
+        binode<T> *g = this->_last;
         for (; g != nullptr; g = g->parent)
         {
             if (!nodeBalanced(g))
@@ -1031,6 +1032,7 @@ public:
             }
             bintree<T>::__updateheight(g);
         }
+        this->_size++;
         return true;
     }
     bool erase(const T & x){

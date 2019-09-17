@@ -3,7 +3,7 @@
 
 #include "dsa.h"
 
-#define SIZE 15
+#define SIZE 10
 using namespace std;
 using namespace dsa;
 
@@ -22,6 +22,8 @@ int main(int argc, char const *argv[])
 
     avltree<int> ax;
     ax.build(a);
+    cout << ax.size() << endl;
+    cout << ax.balanced() << endl;
     ax.printTreeHorizon();
     // while (cin >> n && n != 0)
     // {
