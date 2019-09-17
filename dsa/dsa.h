@@ -6,5 +6,7 @@
 #include "linear.h"
 #include "graph.h"
 #include "set_union.h"
+#include "functions.h"
+
 
 #endif

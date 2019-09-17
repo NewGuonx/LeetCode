@@ -3,6 +3,7 @@
 
 #include <bits/stdc++.h>
 #include "set_union.h"
+#include "functions.h"
 using namespace std;
 
 #ifndef __NEW_GRAPH__
@@ -57,13 +58,6 @@ public:
 class udGraph
 {
 protected:
-    void output_vec(vector<int> &a)
-    {
-        cout << a[0];
-        for (int i = 1; i < a.size(); i++)
-            cout << " -> " << a[i];
-        cout << endl;
-    }
     int nv, connected_cnt, stp_unique;
     unordered_set<edge *> __memoryOEdge;
     unordered_map<int, set<int>> posv, pre, prev, post;

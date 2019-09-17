@@ -132,7 +132,7 @@ struct binode
 #define _height(p) ((p != nullptr) ? (p)->height : -1)
 #define _depth(p) ((p != nullptr) ? (p)->depth : -1)
 #define _factor(p) ((_height(p->lc)) - (_height(p->rc)))
-#define __release(p) ( delete (p), (p) = nullptr)
+#define __release(p) (delete (p), (p) = nullptr)
 
 template <typename T>
 class bintree
@@ -1128,7 +1128,7 @@ protected:
 
 template <class T>
 class spltree : public bstree<T>
-{ 
+{
 protected:
     binode<T> *__splay(binode<T> *opnv)
     {
@@ -1600,7 +1600,7 @@ protected:
             __double_red_solution(g);
         }
     }
-    void __double_blk_solution(binode<T> * x)
+    void __double_blk_solution(binode<T> *x)
     {
     }
 
