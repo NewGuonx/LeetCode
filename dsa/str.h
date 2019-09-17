@@ -1,8 +1,12 @@
-// author - newguo@sonaspy.cn
+// author - sonaspy@outlook.com
 // coding - utf_8
-
+#ifndef __STR__
+#define __STR__
 #include <bits/stdc++.h>
 using namespace std;
+namespace dsa
+{
+
 int str_cmp(const char *str1, const char *str2)
 {
     //not! while(*str1++==*str2++)
@@ -46,3 +50,5 @@ string str_add(string s1, string s2)
         res = to_string(int64_t(carry)) + res;
     return res;
 }
+} // namespace dsa
+#endif
