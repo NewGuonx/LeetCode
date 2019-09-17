@@ -1,8 +1,8 @@
-#include <bits/stdc++.h>
-using namespace std;
 
 #ifndef __SET_UNION__
 #define __SET_UNION__
+#include <bits/stdc++.h>
+using namespace std;
 namespace dsa
 {
 class _set_union
