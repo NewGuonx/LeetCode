@@ -3,7 +3,7 @@
 
 #include "dsa.h"
 
-#define SIZE 6
+#define SIZE 10
 using namespace std;
 using namespace dsa;
 
@@ -13,18 +13,16 @@ int main(int argc, char const *argv[])
     //test();
     srand(time(NULL));
     int b[SIZE], n = SIZE;
-    generate(b, b + n, [&]() { return rand() % 100; });
+    //generate(b, b + n, [&]() { return rand() % 1000; });
     vector<int> a(b, b + n);
     string s;
-    //iota(b, b + n, 1);
+    iota(b, b + n, 1);
     clock_t startTime, endTime;
     startTime = clock();
 
-    spltree<int> ax;
+    avltree<int> ax;
     ax.build(a);
     cout << ax.size() << endl;
-    ax.printTreeHorizon();
-    ax.search(a[4]);
     ax.printTreeHorizon();
     // while (cin >> n && n != 0)
     // {

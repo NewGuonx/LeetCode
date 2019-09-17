@@ -52,9 +52,8 @@ struct binode
     binode *lc, *rc, *parent;
     int height, depth, ltag, rtag;
     RBColor color;
-    binode(const T &x) : val(x), lc(nullptr), rc(nullptr), parent(nullptr), height(0), depth(0), ltag(0), rtag(0) {}
-    binode(const T &x, binode<T> *p) : val(x), lc(nullptr), rc(nullptr), parent(p), height(0) {}
-    binode(const T &x, binode<T> *p, binode<T> *l, binode<T> *r) : val(x), lc(l), rc(r), parent(p), height(0) {}
+    binode(const T &x, binode<T> *p = nullptr, binode<T> *l = nullptr, binode<T> *r = nullptr) : val(x), lc(l), rc(r), parent(p), height(0) {}
+    binode(const T &x, binode<T> *p, int blkh) : val(x), lc(nullptr), rc(nullptr), parent(p), height(blkh) {}
     bool inline is_l()
     {
         return parent && parent->lc == this;
@@ -94,7 +93,7 @@ struct binode
     {
         return this->lc ? __getmax(this->lc) : nullptr;
     }
-    inline binode *uncle() { this->parent->is_l() ? this->parent->parent->rc : this->parent->parent->lc; }
+    inline binode *uncle() { return this->parent->is_l() ? this->parent->parent->rc : this->parent->parent->lc; }
 
     inline void insert_l(const T &x)
     {
@@ -125,10 +124,11 @@ struct binode
 
 #define from_parent2(x) \
     ((x)->isroot() ? this->_root : ((x)->is_l() ? (x)->parent->lc : (x)->parent->rc))
-#define nodeBalanced(x) ((-2 < _factor(x)) && (_factor(x) < 2))
 // The higher of the two children
 #define tallerchild(x) ( \
     _height((x)->lc) > _height((x)->rc) ? (x)->lc : (_height((x)->lc) < _height((x)->rc) ? (x)->rc : ((x)->is_l() ? (x)->lc : (x)->rc)))
+
+#define nodeBalanced(x) ((-2 < _factor(x)) && (_factor(x) < 2))
 #define _height(p) ((p != nullptr) ? (p)->height : -1)
 #define _depth(p) ((p != nullptr) ? (p)->depth : -1)
 #define _factor(p) ((_height(p->lc)) - (_height(p->rc)))
@@ -848,48 +848,6 @@ class bstree : public bintree<T>
 {
 protected:
     binode<T> *_last;
-    inline binode<T> *___rearrange(binode<T> *&a, binode<T> *&b, binode<T> *&c, binode<T> *&t0, binode<T> *&t1, binode<T> *&t2, binode<T> *&t3)
-    {
-        a->lc = t0;
-        if (t0)
-            t0->parent = a;
-        a->rc = t1;
-        if (t1)
-            t1->parent = a;
-        bintree<T>::__updateheight(a);
-        c->lc = t2;
-        if (t2)
-            t2->parent = c;
-        c->rc = t3;
-        if (t3)
-            t3->parent = c;
-        bintree<T>::__updateheight(c);
-        b->lc = a, a->parent = b, b->rc = c, c->parent = b;
-        bintree<T>::__updateheight(b);
-        return b;
-    }
-    inline binode<T> *__rotate_at(binode<T> *opnv)
-    {
-        binode<T> *p = opnv->parent, *g = p->parent;
-        if (p->is_l())
-        {
-            if (opnv->is_l())
-            { // ll
-                p->parent = g->parent;
-                return ___rearrange(opnv, p, g, opnv->lc, opnv->rc, p->rc, g->rc);
-            }
-            //lr
-            opnv->parent = g->parent;
-            return ___rearrange(p, opnv, g, p->lc, opnv->lc, opnv->rc, g->rc);
-        }
-        if (opnv->is_r())
-        { //rr
-            p->parent = g->parent;
-            return ___rearrange(g, p, opnv, g->lc, p->lc, opnv->lc, opnv->rc);
-        }
-        opnv->parent = g->parent; // rl
-        return ___rearrange(g, opnv, p, g->lc, opnv->lc, opnv->rc, p->rc);
-    }
     inline void __attAsL(binode<T> *&p, binode<T> *&lc)
     {
         p->lc = lc;
@@ -1007,7 +965,6 @@ public:
         this->__updateheightabove(w);
         return true;
     }
-
     binode<T> *&search(const T &x)
     {
         _last = nullptr;
@@ -1054,29 +1011,6 @@ public:
     {
         __insert(this->_root, x, nullptr);
     }
-
-    // bool insert(const T &x)
-    // {
-    //     binode<T> *&w = bstree<T>::search(x);
-    //     if (w)
-    //         return false;
-    //     w = new binode<T>(x, this->_last);
-    //     this->_size++;
-    //     binode<T> *g = this->_last;
-    //     for (; g != nullptr; g = g->parent)
-    //     {
-    //         if (!nodeBalanced(g))
-    //         {
-    //             from_parent2(g) = __rotate_at(tallerchild(tallerchild(g)));
-    //             break;
-    //         }
-    //         bintree<T>::__updateheight(g);
-    //     }
-    //     return true;
-    // }
-    // bool erase(const T &x)
-    // {
-    // }
     inline void clear() { bstree<T>::clear(); }
     ~avltree()
     {
@@ -1288,9 +1222,10 @@ public:
         this->__updateheightabove(t);
         return true;
     }
+
     bool erase(const T &x)
     {
-        if(!this->__root || (x != search(x)->val))
+        if (!this->_root || (x != search(x)->val))
             return 0;
         binode<T> *w = this->_root, *t, *lt;
         if (!(this->_root->has_l()))
@@ -1312,11 +1247,16 @@ public:
             this->_root->lc = nullptr;
             this->_root = this->_root->rc;
             this->_root->parent = nullptr;
+
             search(w->val);
             this->_root->lc = lt;
             lt->parent = this->_root;
         }
-
+        __release(w);
+        this->_size--;
+        if (this->_root)
+            bintree<T>::__updateheight(this->_root);
+        return true;
     }
 };
 
@@ -1612,8 +1552,8 @@ class rbtree : public bstree<T>
 {
     // in rbtree the memver 'height' is blk height
 protected:
-    static inline bool _blk(binode<T> *&opnv) { return opnv == nullptr || opnv->color == blk; }
-    static inline bool _red(binode<T> *&opnv) { return !_blk(opnv); }
+#define _blk(opnv) ((!(opnv) || (opnv)->color == blk))
+#define _red(opnv) (!_blk(opnv))
     static inline void __alterheight(binode<T> *&opnv)
     {
         opnv->height = max(_height(opnv->lc), _height(opnv->rc));
@@ -1627,22 +1567,52 @@ protected:
                    : _height(opnv->lc) + 1;
     }
 
-    void __double_red_solution(binode<T> *)
+    void __double_red_solution(binode<T> *x)
     {
+        if (x->isroot())
+        {
+            this->_root->color = blk;
+            this->_root->height++;
+            return;
+        }
+        binode<T> *p = x->parent, *g, *u, *gg, *r;
+        if (_blk(p))
+            return;
+        g = p->parent;
+        u = x->uncle();
+        if (_blk(u))
+        {
+            if (x->is_l() && p->is_l())
+                p->color = blk;
+            else
+                x->color = blk;
+            g->color = red;
+            gg = g->parent;
+            r = (from_parent2(g) = this->__rotate_at(x));
+            r->parent = gg;
+        }
+        else
+        {
+            p->color = blk, p->height++;
+            u->color = blk, u->height++;
+            if (!g->isroot())
+                g->color = red;
+            __double_red_solution(g);
+        }
     }
-    void __double_blk_solution(binode<T> *)
+    void __double_blk_solution(binode<T> * x)
     {
     }
 
 public:
     bool insert(const T &x)
     {
-        binode<T> *&opnv = search(x);
-        if (opnv)
+        binode<T> *&w = this->search(x);
+        if (w)
             return false;
-        opnv = new binode<T>(x, this->_last);
+        w = new binode<T>(x, this->_last, -1);
         this->_size++;
-        __double_red_solution(opnv);
+        __double_red_solution(w);
         return true;
     }
     bool erase(const T &x)
