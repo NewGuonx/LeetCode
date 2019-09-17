@@ -13,7 +13,7 @@ int main(int argc, char const *argv[])
     //test();
     srand(time(NULL));
     int b[SIZE], n = SIZE;
-    generate(b, b + n, [&]() { return rand() % 1000; });
+    generate(b, b + n, [&]() { return rand() % 100; });
     vector<int> a(b, b + n);
     string s;
     iota(b, b + n, 1);

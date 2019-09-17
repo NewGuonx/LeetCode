@@ -52,8 +52,8 @@ struct binode
     binode *lc, *rc, *parent;
     int height, depth, ltag, rtag;
     RBColor color;
-    binode(const T &x, binode<T> *p = nullptr, binode<T> *l = nullptr, binode<T> *r = nullptr) : val(x), lc(l), rc(r), parent(p), height(0) {}
-    binode(const T &x, binode<T> *p, int blkh) : val(x), lc(nullptr), rc(nullptr), parent(p), height(blkh) {}
+    binode(const T &x, binode<T> *p = nullptr, binode<T> *l = nullptr, binode<T> *r = nullptr, RBColor cl = blk) : \
+    val(x), lc(l), rc(r), parent(p), height(0) ,color(cl) {}
     bool inline is_l()
     {
         return parent && parent->lc == this;
@@ -122,8 +122,7 @@ struct binode
     }
 };
 
-#define from_parent2(x) \
-    ((x)->isroot() ? this->_root : ((x)->is_l() ? (x)->parent->lc : (x)->parent->rc))
+#define from_parent2(x) ( ((x)->is_l() ? (x)->parent->lc : (x)->parent->rc))
 // The higher of the two children
 #define tallerchild(x) ( \
     _height((x)->lc) > _height((x)->rc) ? (x)->lc : (_height((x)->lc) < _height((x)->rc) ? (x)->rc : ((x)->is_l() ? (x)->lc : (x)->rc)))
@@ -931,7 +930,6 @@ protected:
         __release(w);
         return succ;
     }
-
 public:
     ~bstree() { this->clear(); }
     void build(vector<T> &a)
@@ -1009,6 +1007,24 @@ public:
     }
     void insert(const T &x)
     {
+        // binode<T> *&w = this->search(x);
+        // if (w)
+        //     return false;
+        // w = new binode<T>(x, this->_last);
+        // this->_size++;
+        // binode<T> *g = this->_last;
+        // for (; g; g = g->parent)
+        // {
+        //     this->__updateheight(g);
+        //     if (!nodeBalanced(g))
+        //     {
+        //         __rotate_zz(this->_root, g);
+        //         break;
+        //     }
+        //     this->__updateheight(g);
+        // }
+        // this->__updateheightabove(g);
+        // return true;
         __insert(this->_root, x, nullptr);
     }
     inline void clear() { bstree<T>::clear(); }
@@ -1018,31 +1034,61 @@ public:
     }
 
 protected:
+    inline void __rotate_zz(binode<T> *&root, binode<T> *x)
+    {
+        if (_factor(x) == 2)
+            _factor(x->lc) == 1 ? __rotate_zig(root, x) : __rotate_zag(root, x->lc), __rotate_zig(root, x);
+        if (_factor(x) == -2)
+            _factor(x->lc) == -1 ? __rotate_zag(root, x) : __rotate_zig(root, x->rc), __rotate_zag(root, x);
+    }
+    inline void __rotate_zag(binode<T> *&root, binode<T> *x)
+    {
+        binode<T> *y = x->rc;
+        x->rc = y->lc;
+        if (y->lc)
+            y->lc->parent = x;
+        y->parent = x->parent;
+        x->isroot() ? (root = y) : from_parent2(x) = y;
+        y->lc = x;
+        x->parent = y;
+    }
+    inline void __rotate_zig(binode<T> *&root, binode<T> *x)
+    {
+        binode<T> *y = x->lc;
+        x->lc = y->rc;
+        if (y->rc)
+            y->rc->parent = x;
+        y->parent = x->parent;
+        x->isroot() ? (root = y) : from_parent2(x) = y;
+        y->rc = x;
+        x->parent = y;
+    }
+
     inline void _zig(binode<T> *&opnv)
     {
-        binode<T> *tmp = opnv->lc;
-        opnv->lc = tmp->rc;
-        if (tmp->rc)
-            tmp->rc->parent = opnv;
-        tmp->rc = opnv;
-        tmp->parent = opnv->parent;
-        opnv->parent = tmp;
+        binode<T> *newroot = opnv->lc;
+        opnv->lc = newroot->rc;
+        if (newroot->rc)
+            newroot->rc->parent = opnv;
+        newroot->rc = opnv;
+        newroot->parent = opnv->parent;
+        opnv->parent = newroot;
         bintree<T>::__updateheight(opnv);
-        bintree<T>::__updateheight(tmp);
-        opnv = tmp;
+        bintree<T>::__updateheight(newroot);
+        opnv = newroot;
     }
     inline void _zag(binode<T> *&opnv)
     {
-        binode<T> *tmp = opnv->rc;
-        opnv->rc = tmp->lc;
-        if (tmp->lc)
-            tmp->lc->parent = opnv;
-        tmp->lc = opnv;
-        tmp->parent = opnv->parent;
-        opnv->parent = tmp;
+        binode<T> *newroot = opnv->rc;
+        opnv->rc = newroot->lc;
+        if (newroot->lc)
+            newroot->lc->parent = opnv;
+        newroot->lc = opnv;
+        newroot->parent = opnv->parent;
+        opnv->parent = newroot;
         bintree<T>::__updateheight(opnv);
-        bintree<T>::__updateheight(tmp);
-        opnv = tmp;
+        bintree<T>::__updateheight(newroot);
+        opnv = newroot;
     }
     inline void _zigzag(binode<T> *&opnv)
     {
@@ -1487,7 +1533,7 @@ public:
     }
     inline int const order() { return this->_order; }
     inline int const size() { return this->_size; }
-    inline bnode<T> *opnv() { return this->_root; }
+    inline bnode<T> *root() { return this->_root; }
     inline bool const empty() { return !size(); }
     bnode<T> *search(const T &x)
     {
@@ -1548,7 +1594,7 @@ public:
 };
 
 template <typename T>
-class rbtree : public bstree<T>
+class rbtree : public avltree<T>
 {
     // in rbtree the memver 'height' is blk height
 protected:
