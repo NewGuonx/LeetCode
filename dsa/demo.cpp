@@ -13,6 +13,7 @@ template <typename T>
 class sd
 {
 };
+int fun(int &c) { return c; }
 int main(int argc, char const *argv[])
 {
     /* code */
@@ -21,7 +22,6 @@ int main(int argc, char const *argv[])
     vector<int> a(b, b + 6), c(b, b + 6), d(b, b + 6), f(6);
 
     f.insert(f.begin(), *(a.begin() + 6));
-    cout << (b[0] += 0 ? 1 : 0);
-
+    cout << fun(b[0]);
     return 0;
 }

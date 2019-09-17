@@ -52,8 +52,8 @@ struct binode
     binode *lc, *rc, *parent;
     int height, depth, ltag, rtag;
     RBColor color;
-    binode(const T &x) : val(x), lc(nullptr), rc(nullptr), parent(nullptr), height(1), depth(1), ltag(0), rtag(0) {}
-    binode(const T &x, binode<T> *p) : val(x), lc(nullptr), rc(nullptr), parent(p), height(1) {}
+    binode(const T &x) : val(x), lc(nullptr), rc(nullptr), parent(nullptr), height(0), depth(0), ltag(0), rtag(0) {}
+    binode(const T &x, binode<T> *p) : val(x), lc(nullptr), rc(nullptr), parent(p), height(0) {}
     bool inline is_l()
     {
         return parent && parent->lc == this;
@@ -128,8 +128,8 @@ struct binode
 // The higher of the two children
 #define tallerchild(x) ( \
     _height((x)->lc) > _height((x)->rc) ? (x)->lc : (_height((x)->lc) < _height((x)->rc) ? (x)->rc : ((x)->is_l() ? (x)->lc : (x)->rc)))
-#define _height(p) ((p != nullptr) ? (p)->height : 0)
-#define _depth(p) ((p != nullptr) ? (p)->depth : 0)
+#define _height(p) ((p != nullptr) ? (p)->height : -1)
+#define _depth(p) ((p != nullptr) ? (p)->depth : -1)
 #define _factor(p) ((_height(p->lc)) - (_height(p->rc)))
 
 template <typename T>
@@ -1003,19 +1003,38 @@ public:
     void build(vector<T> &a)
     {
         for (auto i : a)
-            __insert(this->_root, i, nullptr);
+            insert(i);
         bintree<T>::__update_status();
     }
-    void erase(const T &x)
+    // void erase(const T &x)
+    // {
+    //     __erase(this->_root, x);
+    //     bintree<T>::__update_status();
+    //     this->_size--;
+    // }
+    // void insert(const T &x)
+    // {
+    //     __insert(this->_root, x, nullptr);
+    // }
+    bool insert(const T &x)
     {
-        __erase(this->_root, x);
-        bintree<T>::__update_status();
-        this->_size--;
+        binode<T> *&w = search(x);
+        if (w)
+            return false;
+        binode<T> *tp_node = new binode<T>(x, this->_last), *g = this->_last;
+        for (; g != nullptr; g = g->parent)
+        {
+            if (!nodeBalanced(g))
+            {
+                from_parent2(g) = __rotate_at(tallerchild(tallerchild(g)));
+                break;
+            }
+            bintree<T>::__updateheight(g);
+        }
+        return true;
     }
-    void insert(const T &x)
-    {
-        __insert(this->_root, x, nullptr);
-        bintree<T>::__update_status();
+    bool erase(const T & x){
+        
     }
     inline void clear() { bstree<T>::clear(); }
     ~avltree()
@@ -1024,6 +1043,48 @@ public:
     }
 
 protected:
+    inline binode<T> *___rearrange(binode<T> *&a, binode<T> *&b, binode<T> *&c, binode<T> *&t0, binode<T> *&t1, binode<T> *&t2, binode<T> *&t3)
+    {
+        a->lc = t0;
+        if (t0)
+            t0->parent = a;
+        a->rc = t1;
+        if (t1)
+            t1->parent = a;
+        bintree<T>::__updateheight(a);
+        c->lc = t2;
+        if (t2)
+            t2->parent = c;
+        c->rc = t3;
+        if (t3)
+            t3->parent = c;
+        bintree<T>::__updateheight(c);
+        b->lc = a, a->parent = b, b->rc = c, c->parent = b;
+        bintree<T>::__updateheight(b);
+        return b;
+    }
+    inline binode<T> *__rotate_at(binode<T> *opnv)
+    {
+        binode<T> *p = opnv->parent, *g = p->parent;
+        if (p->is_l())
+        {
+            if (opnv->is_l())
+            { // ll
+                p->parent = g->parent;
+                return ___rearrange(opnv, p, g, opnv->lc, opnv->rc, p->rc, g->rc);
+            }
+            //lr
+            opnv->parent = g->parent;
+            return ___rearrange(p, opnv, g, p->lc, opnv->lc, opnv->rc, g->rc);
+        }
+        if (opnv->is_r())
+        { //rr
+            p->parent = g->parent;
+            return ___rearrange(g, p, opnv, g->lc, p->lc, opnv->lc, opnv->rc);
+        }
+        opnv->parent = g->parent; // rl
+        return ___rearrange(g, opnv, p, g->lc, opnv->lc, opnv->rc, p->rc);
+    }
     inline void _zig(binode<T> *&opnv)
     {
         binode<T> *tmp = opnv->lc;
