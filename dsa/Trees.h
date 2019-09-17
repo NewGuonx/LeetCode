@@ -54,6 +54,7 @@ struct binode
     RBColor color;
     binode(const T &x) : val(x), lc(nullptr), rc(nullptr), parent(nullptr), height(0), depth(0), ltag(0), rtag(0) {}
     binode(const T &x, binode<T> *p) : val(x), lc(nullptr), rc(nullptr), parent(p), height(0) {}
+    binode(const T &x, binode<T> *p, binode<T> *l, binode<T> *r) : val(x), lc(l), rc(r), parent(p), height(0) {}
     bool inline is_l()
     {
         return parent && parent->lc == this;
@@ -131,6 +132,7 @@ struct binode
 #define _height(p) ((p != nullptr) ? (p)->height : -1)
 #define _depth(p) ((p != nullptr) ? (p)->depth : -1)
 #define _factor(p) ((_height(p->lc)) - (_height(p->rc)))
+#define __release(p) ( delete (p), (p) = nullptr)
 
 template <typename T>
 class bintree
@@ -154,11 +156,6 @@ protected:
             __updateheight(opnv);
             opnv = opnv->parent;
         }
-    }
-    static inline void __release(binode<T> *&opnv)
-    {
-        delete opnv;
-        opnv = nullptr;
     }
     static void __update_member(binode<T> *opnv, binode<T> *p)
     {
@@ -851,6 +848,48 @@ class bstree : public bintree<T>
 {
 protected:
     binode<T> *_last;
+    inline binode<T> *___rearrange(binode<T> *&a, binode<T> *&b, binode<T> *&c, binode<T> *&t0, binode<T> *&t1, binode<T> *&t2, binode<T> *&t3)
+    {
+        a->lc = t0;
+        if (t0)
+            t0->parent = a;
+        a->rc = t1;
+        if (t1)
+            t1->parent = a;
+        bintree<T>::__updateheight(a);
+        c->lc = t2;
+        if (t2)
+            t2->parent = c;
+        c->rc = t3;
+        if (t3)
+            t3->parent = c;
+        bintree<T>::__updateheight(c);
+        b->lc = a, a->parent = b, b->rc = c, c->parent = b;
+        bintree<T>::__updateheight(b);
+        return b;
+    }
+    inline binode<T> *__rotate_at(binode<T> *opnv)
+    {
+        binode<T> *p = opnv->parent, *g = p->parent;
+        if (p->is_l())
+        {
+            if (opnv->is_l())
+            { // ll
+                p->parent = g->parent;
+                return ___rearrange(opnv, p, g, opnv->lc, opnv->rc, p->rc, g->rc);
+            }
+            //lr
+            opnv->parent = g->parent;
+            return ___rearrange(p, opnv, g, p->lc, opnv->lc, opnv->rc, g->rc);
+        }
+        if (opnv->is_r())
+        { //rr
+            p->parent = g->parent;
+            return ___rearrange(g, p, opnv, g->lc, p->lc, opnv->lc, opnv->rc);
+        }
+        opnv->parent = g->parent; // rl
+        return ___rearrange(g, opnv, p, g->lc, opnv->lc, opnv->rc, p->rc);
+    }
     inline void __attAsL(binode<T> *&p, binode<T> *&lc)
     {
         p->lc = lc;
@@ -863,7 +902,6 @@ protected:
         if (rc)
             rc->parent = p;
     }
-
     bool __judge_avl(binode<T> *opnv, binode<T> *&p)
     {
         if (!opnv)
@@ -904,7 +942,7 @@ protected:
             {
                 tmp = opnv;
                 opnv = opnv->lc ? opnv->lc : opnv->rc;
-                bintree<T>::__release(tmp);
+                __release(tmp);
             }
         }
         return opnv;
@@ -932,7 +970,7 @@ protected:
             u == opnv ? u->rc = succ : u->lc = succ;
         }
         last = w->parent;
-        bintree<T>::__release(w);
+        __release(w);
         return succ;
     }
 
@@ -1046,48 +1084,6 @@ public:
     }
 
 protected:
-    inline binode<T> *___rearrange(binode<T> *&a, binode<T> *&b, binode<T> *&c, binode<T> *&t0, binode<T> *&t1, binode<T> *&t2, binode<T> *&t3)
-    {
-        a->lc = t0;
-        if (t0)
-            t0->parent = a;
-        a->rc = t1;
-        if (t1)
-            t1->parent = a;
-        bintree<T>::__updateheight(a);
-        c->lc = t2;
-        if (t2)
-            t2->parent = c;
-        c->rc = t3;
-        if (t3)
-            t3->parent = c;
-        bintree<T>::__updateheight(c);
-        b->lc = a, a->parent = b, b->rc = c, c->parent = b;
-        bintree<T>::__updateheight(b);
-        return b;
-    }
-    inline binode<T> *__rotate_at(binode<T> *opnv)
-    {
-        binode<T> *p = opnv->parent, *g = p->parent;
-        if (p->is_l())
-        {
-            if (opnv->is_l())
-            { // ll
-                p->parent = g->parent;
-                return ___rearrange(opnv, p, g, opnv->lc, opnv->rc, p->rc, g->rc);
-            }
-            //lr
-            opnv->parent = g->parent;
-            return ___rearrange(p, opnv, g, p->lc, opnv->lc, opnv->rc, g->rc);
-        }
-        if (opnv->is_r())
-        { //rr
-            p->parent = g->parent;
-            return ___rearrange(g, p, opnv, g->lc, p->lc, opnv->lc, opnv->rc);
-        }
-        opnv->parent = g->parent; // rl
-        return ___rearrange(g, opnv, p, g->lc, opnv->lc, opnv->rc, p->rc);
-    }
     inline void _zig(binode<T> *&opnv)
     {
         binode<T> *tmp = opnv->lc;
@@ -1189,67 +1185,140 @@ protected:
             {
                 tmp = opnv;
                 opnv = opnv->lc ? opnv->lc : opnv->rc;
-                bintree<T>::__release(tmp);
+                __release(tmp);
             }
         }
         return opnv;
     }
 };
 
-// template <class T>
-// class splayTree : public bstree<T>
-// { // still bug there
-// protected:
-//     binode<T> *__splay(binode<T> *&opnv)
-//     {
-//         if (!opnv)
-//             return nullptr;
-//         binode<T> *p, *g, *gg;
-//         while (1)
-//         {
-//             p = opnv->parent;
-//             if (!p)
-//                 break;
-//             g = p->parent;
-//             if (!g)
-//                 break;
-//             if (opnv->is_l())
-//                 if (p->is_l())
-//                     this->__attAsL(g, p->rc), this->__attAsL(p, opnv->rc), this->__attAsR(p, g), this->__attAsR(opnv, p);
-//                 else
-//                     this->__attAsL(p, opnv->rc), this->__attAsR(g, opnv->lc), this->__attAsL(opnv, g), this->__attAsR(opnv, p);
-//             else if (p->is_r())
-//                 this->__attAsR(g, p->lc), this->__attAsR(p, opnv->lc), this->__attAsL(p, g), this->__attAsL(opnv, p);
-//             else
-//                 this->__attAsR(p, opnv->lc), this->__attAsL(g, opnv->rc), this->__attAsR(opnv, g), this->__attAsL(opnv, p);
-//             if (!gg)
-//                 opnv->parent = nullptr;
-//             else
-//                 g == gg->lc ? this->__attAsL(gg, opnv) : this->__attAsR(gg, opnv);
-//             bintree<T>::__updateheight(g), bintree<T>::__updateheight(p), bintree<T>::__updateheight(opnv);
-//         }
-//         p = opnv->parent;
-//         if (p)
-//         {
-//             if (opnv->is_l())
-//                 this->__attAsL(p, opnv->rc), this->__attAsR(opnv, p);
-//             else
-//                 this->__attAsR(p, opnv->lc), this->__attAsL(opnv, p);
-//             bintree<T>::__updateheight(p), bintree<T>::__updateheight(opnv);
-//         }
-//         opnv->parent = nullptr;
-//         return opnv;
-//     }
+template <class T>
+class spltree : public bstree<T>
+{ 
+protected:
+    binode<T> *__splay(binode<T> *opnv)
+    {
+        if (!opnv)
+            return nullptr;
+        binode<T> *p, *g, *gg;
+        while (1)
+        {
+            if (!opnv->parent)
+                break;
+            p = opnv->parent;
+            if (!p->parent)
+                break;
+            g = p->parent;
+            gg = g->parent;
+            if (opnv->is_l())
+            {
+                if (p->is_l())
+                    this->__attAsL(g, p->rc), this->__attAsL(p, opnv->rc), this->__attAsR(p, g), this->__attAsR(opnv, p);
+                else
+                    this->__attAsL(p, opnv->rc), this->__attAsR(g, opnv->lc), this->__attAsL(opnv, g), this->__attAsR(opnv, p);
+            }
+            else if (p->is_r())
+                this->__attAsR(g, p->lc), this->__attAsR(p, opnv->lc), this->__attAsL(p, g), this->__attAsL(opnv, p);
+            else
+                this->__attAsR(p, opnv->lc), this->__attAsL(g, opnv->rc), this->__attAsR(opnv, g), this->__attAsL(opnv, p);
+            if (!gg)
+                opnv->parent = nullptr;
+            else
+                g == gg->lc ? this->__attAsL(gg, opnv) : this->__attAsR(gg, opnv);
+            bintree<T>::__updateheight(g), bintree<T>::__updateheight(p), bintree<T>::__updateheight(opnv);
+        }
+        p = opnv->parent;
+        if (p)
+        {
+            if (opnv->is_l())
+                this->__attAsL(p, opnv->rc), this->__attAsR(opnv, p);
+            else
+                this->__attAsR(p, opnv->lc), this->__attAsL(opnv, p);
+            bintree<T>::__updateheight(p), bintree<T>::__updateheight(opnv);
+        }
+        opnv->parent = nullptr;
+        return opnv;
+    }
 
-// public:
-//     binode<T> *search(const T &e)
-//     {
-//         this->_last = nullptr;
-//         binode<T> *p = this->__search(this->_root, e);
-//         this->_root = __splay(p ? p : this->_last);
-//         return this->_root;
-//     }
-// };
+public:
+    void build(vector<T> &a)
+    {
+        for (auto data : a)
+            insert(data);
+        this->__update_status();
+    }
+    binode<T> *search(const T &e)
+    {
+        this->_last = nullptr;
+        binode<T> *p = this->__search(this->_root, e);
+        this->_root = __splay(p ? p : this->_last);
+        return this->_root;
+    }
+    bool insert(const T &x)
+    {
+        if (!this->_root)
+        {
+            this->_size++;
+            this->_root = new binode<T>(x);
+            return true;
+        }
+        binode<T> *w = search(x), *t;
+        if (w->val == x)
+            return false;
+        this->_size++;
+        t = this->_root;
+        if (this->_root->val < x)
+        {
+            t->parent = (this->_root = new binode<T>(x, nullptr, t, t->rc));
+            if (t->has_r())
+            {
+                t->rc->parent = this->_root;
+                t->rc = nullptr;
+            }
+        }
+        else
+        {
+            t->parent = (this->_root = new binode<T>(x, nullptr, t->lc, t));
+            if (t->has_l())
+            {
+                t->lc->parent = this->_root;
+                t->lc = nullptr;
+            }
+        }
+        this->__updateheightabove(t);
+        return true;
+    }
+    bool erase(const T &x)
+    {
+        if(!this->__root || (x != search(x)->val))
+            return 0;
+        binode<T> *w = this->_root, *t, *lt;
+        if (!(this->_root->has_l()))
+        {
+            this->_root = this->_root->rc;
+            if (this->_root)
+                this->_root->parent = nullptr;
+        }
+        else if (!(this->_root->has_r()))
+        {
+            this->_root = this->_root->lc;
+            if (this->_root)
+                this->_root->parent = nullptr;
+        }
+        else
+        {
+            lt = this->_root->lc;
+            lt->parent = nullptr;
+            this->_root->lc = nullptr;
+            this->_root = this->_root->rc;
+            this->_root->parent = nullptr;
+            search(w->val);
+            this->_root->lc = lt;
+            lt->parent = this->_root;
+        }
+
+    }
+};
 
 template <typename T>
 struct bnode
@@ -1281,13 +1350,6 @@ class btree
 protected:
     int _size, _order;
     bnode<T> *_root, *_last;
-    unordered_set<bnode<T> *> _memoryOfNode;
-    void __release(bnode<T> *&opnv)
-    {
-        _memoryOfNode.erase(opnv);
-        delete opnv;
-        opnv = nullptr;
-    }
     void __overfSolution(bnode<T> *opnv)
     {
         if (opnv->key.size() <= _order - 1)
@@ -1453,7 +1515,6 @@ public:
     btree<T>(int order = 3) : _order(order), _size(0)
     {
         _root = new bnode<T>();
-        _memoryOfNode.insert(_root);
     }
     ~btree()
     {
@@ -1483,9 +1544,6 @@ public:
     }
     inline void const clear()
     {
-        for (auto &ptr : _memoryOfNode)
-            delete ptr;
-        _memoryOfNode.clear();
     }
     inline int const order() { return this->_order; }
     inline int const size() { return this->_size; }
