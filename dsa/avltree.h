@@ -53,29 +53,6 @@ public:
     }
 
 protected:
-    inline void __rotate_zag(binode<T> *&root, binode<T> *x)
-    {
-        binode<T> *y = x->rc;
-        x->rc = y->lc;
-        if (y->lc)
-            y->lc->parent = x;
-        y->parent = x->parent;
-        x->isroot() ? (root = y) : from_parent2(x) = y;
-        y->lc = x;
-        x->parent = y;
-    }
-    inline void __rotate_zig(binode<T> *&root, binode<T> *x)
-    {
-        binode<T> *y = x->lc;
-        x->lc = y->rc;
-        if (y->rc)
-            y->rc->parent = x;
-        y->parent = x->parent;
-        x->isroot() ? (root = y) : from_parent2(x) = y;
-        y->rc = x;
-        x->parent = y;
-    }
-
     inline void _zig(binode<T> *&v)
     {
         binode<T> *y = v->lc;

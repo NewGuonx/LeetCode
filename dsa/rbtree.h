@@ -1,10 +1,13 @@
-// author - sonaspy@outlook.com 
-// coding - utf_8 
+// author - sonaspy@outlook.com
+// coding - utf_8
 
-#ifndef __RBTREE__
-#define __RBTREE__
+#ifndef __RED_BLK___
+#define __RED_BLK___
 
 #include "avltree.h"
+namespace dsa
+{
+
 template <typename T>
 class rbtree : public avltree<T>
 {
@@ -12,6 +15,28 @@ class rbtree : public avltree<T>
 protected:
 #define _blk(opnv) ((!(opnv) || (opnv)->color == blk))
 #define _red(opnv) (!_blk(opnv))
+    inline void __rotate_l(binode<T> *&root, binode<T> *x)
+    {
+        binode<T> *y = x->rc;
+        x->rc = y->lc;
+        if (y->lc)
+            y->lc->parent = x;
+        y->parent = x->parent;
+        x->isroot() ? (root = y) : from_parent2(x) = y;
+        y->lc = x;
+        x->parent = y;
+    }
+    inline void __rotate_r(binode<T> *&root, binode<T> *x)
+    {
+        binode<T> *y = x->lc;
+        x->lc = y->rc;
+        if (y->rc)
+            y->rc->parent = x;
+        y->parent = x->parent;
+        x->isroot() ? (root = y) : from_parent2(x) = y;
+        y->rc = x;
+        x->parent = y;
+    }
     static inline void __alterheight(binode<T> *&opnv)
     {
         opnv->height = max(_height(opnv->lc), _height(opnv->rc));
@@ -24,7 +49,6 @@ protected:
                    ? _height(opnv->lc)
                    : _height(opnv->lc) + 1;
     }
-
     void __double_red_solution(binode<T> *x)
     {
         if (x->isroot())
@@ -68,9 +92,9 @@ public:
         binode<T> *&w = this->search(x);
         if (w)
             return false;
-        w = new binode<T>(x, this->_last, -1);
+        w = new binode<T>(x, this->_last);
         this->_size++;
-        __double_red_solution(w);
+        //__double_red_solution(w);
         return true;
     }
     bool erase(const T &x)
@@ -105,4 +129,5 @@ public:
         bintree<T>::__update_status();
     }
 };
+} // namespace dsa
 #endif

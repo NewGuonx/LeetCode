@@ -1,13 +1,12 @@
 // author -sonaspy@outlook.com
 // coding - utf_8
 
+#ifndef __NEW_GRAPH__
+#define __NEW_GRAPH__
 #include <bits/stdc++.h>
 #include "set_union.h"
 #include "functions.h"
 using namespace std;
-
-#ifndef __NEW_GRAPH__
-#define __NEW_GRAPH__
 
 namespace dsa
 {

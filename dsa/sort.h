@@ -1,32 +1,32 @@
 // author -sonaspy@outlook.com
 // coding - utf_8
 
-#include <bits/stdc++.h>
-
-using namespace std;
 #ifndef __NEW_SORT__
 #define __NEW_SORT__
+#include <bits/stdc++.h>
+#include "functions.h"
+using namespace std;
 namespace dsa
 {
-template <typename T>
-static void HeapSort(T *lo, T *hi)
+template <typename RandAccessor>
+static void HeapSort(RandAccessor lo, RandAccessor hi)
 {
     make_heap(lo, hi);
     for (int i = hi - lo; i > 1; --i)
         pop_heap(lo, lo + i);
 }
 
-template <typename T>
-static void bubbleSort(T *lo, T *hi)
+template <typename RandAccessor>
+static void bubbleSort(RandAccessor lo, RandAccessor hi)
 { // Bubble largest element in a[0:n-1] to hi.
-    T *i, *k;
+    RandAccessor i, k;
     for (k = hi - 1; k > lo; k--)
     {
         bool swapped = 0;
         for (i = lo; i < k; i++)
             if (*i > *(i + 1))
             {
-                swap(*i, *(i + 1));
+                iter_swap(i, (i + 1));
                 swapped = 1;
             }
         if (!swapped)
@@ -34,146 +34,94 @@ static void bubbleSort(T *lo, T *hi)
     }
 }
 
-template <typename T>
-static void double_bubbleSort(T *lo, T *hi)
+template <typename RandAccessor>
+static void double_bubbleSort(RandAccessor lo, RandAccessor hi)
 { // Bubble largest element in a[0:n-1] to hi.
     bool flag = true;
     hi--;
-    T *i;
+    RandAccessor i;
     while (lo < hi && flag)
     {
         flag = false;
         for (i = lo; i < hi; ++i)
             if (*i > *(i + 1))
-                swap(*i, *(i + 1)), flag = true;
+                iter_swap(i, (i + 1)), flag = true;
         hi--;
         for (i = hi; i > lo; --i)
             if (*i < *(i - 1))
-                swap(*i, *(i - 1)), flag = true;
+                iter_swap(i, (i - 1)), flag = true;
         lo++;
     }
 }
 
-template <typename T>
-static void selectionSort(T *lo, T *hi)
+template <typename RandAccessor>
+static void selectionSort(RandAccessor lo, RandAccessor hi)
 { // Sort the n elements a[0:n-1].
 
-    T *i, *j;
-    for (T *i = hi; i > lo + 1; i--)
-    {
-        j = max_element(lo, i);
-        swap(*j, *(i - 1));
-    }
+    RandAccessor i;
+    for (i = hi; i > lo + 1; i--)
+        iter_swap(max_element(lo, i), (i - 1));
 }
 
-template <class T>
-T *_lower_bound(T *lo, T *hi, const T &val)
-{ // binary search
-    int len = hi - lo, half_len;
-    T *mid;
-    while (len > 0)
-    {
-        half_len = len >> 1;
-        mid = lo + half_len;
-        if (*mid < val) // (<=) upperbound
-        {
-            lo = mid + 1;
-            len -= half_len + 1;
-        }
-        else
-            len = half_len;
-    }
-    return lo;
-}
-template <class T>
-T *_upper_bound(T *lo, T *hi, const T &val)
-{ // binary search
-    int len = hi - lo, half_len;
-    T *mid;
-    while (len > 0)
-    {
-        half_len = len >> 1;
-        mid = lo + half_len;
-        if (*mid <= val) // (<=) upperbound
-        {
-            lo = mid + 1;
-            len -= half_len + 1;
-        }
-        else
-            len = half_len;
-    }
-    return lo;
-}
-template <typename T>
-static inline void linear_insert(T *lo, T *hi)
-{ // [lo, hi]
-    T val = *hi;
-    if (val > *(hi - 1))
-        return;
-    T *pos = val < *lo ? lo : upper_bound(lo, hi, val);
-    copy_backward(pos, hi, hi + 1);
-    *pos = val;
-}
-template <typename T>
-static void insertionSort(T *lo, T *hi)
+template <typename RandAccessor>
+static void insertionSort(RandAccessor lo, RandAccessor hi)
 { // [lo, hi)
     if (lo != hi)
-        for (T *i = lo + 1; i != hi; ++i)
-            linear_insert(lo, i);
+        for (RandAccessor i = lo + 1; i != hi; ++i)
+            linear_insert(lo, i, *i);
 }
 
 const int Sedgewick[] = {929, 505, 209, 109, 41, 19, 5, 1, 0};
-template <typename T>
-static void shellSort(T *a, T *b)
+template <typename RandAccessor, typename T>
+static void __shellsort(RandAccessor lo, RandAccessor hi, const T &val)
 {
-    int n = b - a;
-    int i, j, c, increment;
+    int c, increment, n = hi - lo;
+    RandAccessor i, j;
     for (c = 0; n <= Sedgewick[c]; ++c)
         ;
-
-    for (increment = Sedgewick[c]; increment != 0; increment = Sedgewick[++c])
-        for (i = increment; i < n; ++i)
+    for (increment = Sedgewick[c]; increment > 0; increment = Sedgewick[++c])
+        for (i = lo + increment; i < hi; ++i)
         {
-            T tmp = a[i];
-            for (j = i; increment <= j && a[j - increment] > tmp; j -= increment)
-                a[j] = a[j - increment];
-            a[j] = tmp;
+            T tmp = *i;
+            for (j = i; lo + increment <= j && *(j - increment) > tmp; j -= increment)
+                *j = *(j - increment);
+            *j = tmp;
         }
 }
-
-template <typename T>
-static void __merge(T *lo, T *mid, T *hi)
+template <typename RandAccessor>
+static void shellsort(RandAccessor lo, RandAccessor hi)
+{
+    __shellsort(lo, hi, *lo);
+}
+template <typename RandAccessor, typename T>
+static inline void __merge(RandAccessor lo, RandAccessor mid, RandAccessor hi, const T &val)
 {
     // a temporary array to store merged result
-    T merged[hi - lo + 1], *i = lo, *j = mid + 1;
-    int cur = 0;
-
+    vector<T> merged;
+    RandAccessor i = lo, j = mid + 1;
     while (i <= mid && j <= hi)
-        merged[cur++] = *i < *j ? *(i++) : *(j++);
-
-    while (i <= mid)
-        merged[cur++] = *(i++);
-
-    while (j <= hi)
-        merged[cur++] = *(j++);
-
-    //copying the entire merged array back
-    for (int i = 0; i < cur; ++i)
-        *(lo++) = merged[i];
+        merged.push_back(*i < *j ? *(i++) : *(j++));
+    merged.insert(merged.end(), i, mid + 1);
+    merged.insert(merged.end(), j, hi + 1);
+    copy(merged.begin(), merged.end(), lo);
 }
-//[lo, hi]
-template <typename T>
-static void mergeSort(T *lo, T *hi)
+template <typename RandAccessor, typename T>
+static void __mergeSort(RandAccessor lo, RandAccessor hi, const T &val)
 {
     if (lo < hi)
     {
-        T *mid = lo + (hi - lo) / 2;
-        mergeSort(lo, mid);
-        mergeSort(mid + 1, hi);
-        __merge(lo, mid, hi);
+        RandAccessor mid = lo + (hi - lo) / 2;
+        __mergeSort(lo, mid, val);
+        __mergeSort(mid + 1, hi, val);
+        __merge(lo, mid, hi, val);
     }
 }
 
+template <typename RandAccessor>
+static void mergeSort(RandAccessor lo, RandAccessor hi)
+{
+    __mergeSort(lo, hi, *lo);
+}
 template <typename T>
 static void mergeSort_(T *arr, T *b)
 {
@@ -189,6 +137,8 @@ static void mergeSort_(T *arr, T *b)
         len *= 2;
     }
 }
+
+
 
 #define CUTOFF 50
 template <typename T>
@@ -244,6 +194,8 @@ static T *findKthMin(T *lo, T *hi, int k)
         return findKthMin(p + 1, hi, k - (cur + 1));
 }
 
+
+
 template <typename T>
 static void partial_k_sort(T *lo, T *hi, int k)
 {
@@ -273,14 +225,6 @@ static void partial_k_sort2(T *lo, T *hi, int k)
             push_heap(lo, lo + k, greater<int>());
         }
     }
-}
-
-template <typename T>
-static void s_output(T *lo, T *hi)
-{
-    for (; lo < hi; ++lo)
-        cout << *lo << " ";
-    cout << endl;
 }
 
 /*
@@ -335,6 +279,10 @@ static void tableSort(T *a, T *b)
 //     quickSort(left, mid - 1);
 //     quickSort(mid, right);
 // }
-}; // namespace dsa
+
+
+};
+
+ // namespace dsa
 
 #endif

@@ -11,10 +11,6 @@ namespace dsa
 template <typename T>
 class bintree
 {
-    friend class rbtree<T>;
-    friend class avltree<T>;
-    friend class bstree<T>;
-
 protected:
     binode<T> *_root, *tp1;
     deque<binode<T> *> q, nexq;

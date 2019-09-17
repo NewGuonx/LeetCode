@@ -2,7 +2,6 @@
 // coding - utf_8
 
 #define SIZE 1000
-#include <bits/stdc++.h>
 #include "dsa.h"
 #define test() freopen("in", "r", stdin)
 
