@@ -1006,38 +1006,39 @@ public:
             insert(i);
         bintree<T>::__update_status();
     }
-    // void erase(const T &x)
-    // {
-    //     __erase(this->_root, x);
-    //     bintree<T>::__update_status();
-    //     this->_size--;
-    // }
-    // void insert(const T &x)
-    // {
-    //     __insert(this->_root, x, nullptr);
-    // }
-    bool insert(const T &x)
+    void erase(const T &x)
     {
-        binode<T> *&w = bstree<T>::search(x);
-        if (w)
-            return false;
-        w = new binode<T>(x, this->_last);
-        binode<T> *g = this->_last;
-        for (; g != nullptr; g = g->parent)
-        {
-            if (!nodeBalanced(g))
-            {
-                from_parent2(g) = __rotate_at(tallerchild(tallerchild(g)));
-                break;
-            }
-            bintree<T>::__updateheight(g);
-        }
-        this->_size++;
-        return true;
+        __erase(this->_root, x);
+        bintree<T>::__update_status();
+        this->_size--;
     }
-    bool erase(const T & x){
-        
+    void insert(const T &x)
+    {
+        __insert(this->_root, x, nullptr);
     }
+
+    // bool insert(const T &x)
+    // {
+    //     binode<T> *&w = bstree<T>::search(x);
+    //     if (w)
+    //         return false;
+    //     w = new binode<T>(x, this->_last);
+    //     this->_size++;
+    //     binode<T> *g = this->_last;
+    //     for (; g != nullptr; g = g->parent)
+    //     {
+    //         if (!nodeBalanced(g))
+    //         {
+    //             from_parent2(g) = __rotate_at(tallerchild(tallerchild(g)));
+    //             break;
+    //         }
+    //         bintree<T>::__updateheight(g);
+    //     }
+    //     return true;
+    // }
+    // bool erase(const T &x)
+    // {
+    // }
     inline void clear() { bstree<T>::clear(); }
     ~avltree()
     {

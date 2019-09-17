@@ -22,6 +22,7 @@ int main(int argc, char const *argv[])
 
     avltree<int> ax;
     ax.build(a);
+    cout << ax.root()->val << endl;
     cout << ax.size() << endl;
     cout << ax.balanced() << endl;
     ax.printTreeHorizon();
