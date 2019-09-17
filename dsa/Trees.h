@@ -33,15 +33,15 @@ struct binode;
 template <typename T>
 static inline binode<T> *__getmax(binode<T> *opnv)
 {
-    while (opnv->right)
-        opnv = opnv->right;
+    while (opnv->rc)
+        opnv = opnv->rc;
     return opnv;
 }
 template <typename T>
 static inline binode<T> *__getmin(binode<T> *opnv)
 {
-    while (opnv->left)
-        opnv = opnv->left;
+    while (opnv->lc)
+        opnv = opnv->lc;
     return opnv;
 }
 
@@ -49,18 +49,18 @@ template <typename T>
 struct binode
 {
     T val;
-    binode *left, *right, *parent;
+    binode *lc, *rc, *parent;
     int height, depth, ltag, rtag;
     RBColor color;
-    binode(const T &x) : val(x), left(nullptr), right(nullptr), parent(nullptr), height(1), depth(1), ltag(0), rtag(0) {}
-    binode(const T &x, binode<T> *p) : val(x), left(nullptr), right(nullptr), parent(p), height(1) {}
+    binode(const T &x) : val(x), lc(nullptr), rc(nullptr), parent(nullptr), height(1), depth(1), ltag(0), rtag(0) {}
+    binode(const T &x, binode<T> *p) : val(x), lc(nullptr), rc(nullptr), parent(p), height(1) {}
     bool inline is_l()
     {
-        return parent && parent->left == this;
+        return parent && parent->lc == this;
     }
     bool inline is_r()
     {
-        return parent && parent->right == this;
+        return parent && parent->rc == this;
     }
     bool inline isroot()
     {
@@ -68,40 +68,40 @@ struct binode
     }
     bool inline has_r()
     {
-        return right != nullptr;
+        return rc != nullptr;
     }
     bool inline has_l()
     {
-        return left != nullptr;
+        return lc != nullptr;
     }
     bool inline has_lr()
     {
-        return left != nullptr && right != nullptr;
+        return lc != nullptr && rc != nullptr;
     }
     bool inline is_leaf()
     {
-        return !right && !left;
+        return !rc && !lc;
     }
     inline bool operator==(const binode *&bn) { return val == bn->val; }
     inline bool operator<(const binode *&bn) { return val < bn->val; }
     inline bool operator>(const binode *&bn) { return val > bn->val; }
     inline binode *successor()
     {
-        return this->right ? __getmin(this->right) : nullptr;
+        return this->rc ? __getmin(this->rc) : nullptr;
     }
     inline binode *precessor()
     {
-        return this->left ? __getmax(this->left) : nullptr;
+        return this->lc ? __getmax(this->lc) : nullptr;
     }
-    inline binode *uncle() { this->parent->is_l() ? this->parent->parent->right : this->parent->parent->left; }
+    inline binode *uncle() { this->parent->is_l() ? this->parent->parent->rc : this->parent->parent->lc; }
 
     inline void insert_l(const T &x)
     {
-        left = new binode(x, this);
+        lc = new binode(x, this);
     }
     inline void insert_r(const T &x)
     {
-        right = new binode(x, this);
+        rc = new binode(x, this);
     }
     int size()
     {
@@ -113,24 +113,24 @@ struct binode
         {
             tp1 = q.front(), q.pop_front();
             cnt++;
-            if (tp1->left)
-                q.push_back(tp1->left);
-            if (tp1->right)
-                q.push_back(tp1->right);
+            if (tp1->lc)
+                q.push_back(tp1->lc);
+            if (tp1->rc)
+                q.push_back(tp1->rc);
         }
         return cnt;
     }
 };
 
 #define from_parent2(x) \
-    ((x)->isroot() ? this->_root : ((x)->is_l() ? (x)->parent->left : (x)->parent->right))
+    ((x)->isroot() ? this->_root : ((x)->is_l() ? (x)->parent->lc : (x)->parent->rc))
 #define nodeBalanced(x) ((-2 < _factor(x)) && (_factor(x) < 2))
 // The higher of the two children
 #define tallerchild(x) ( \
     _height((x)->lc) > _height((x)->rc) ? (x)->lc : (_height((x)->lc) < _height((x)->rc) ? (x)->rc : ((x)->is_l() ? (x)->lc : (x)->rc)))
 #define _height(p) ((p != nullptr) ? (p)->height : 0)
 #define _depth(p) ((p != nullptr) ? (p)->depth : 0)
-#define _factor(p) ((_height(p->left)) - (_height(p->right)))
+#define _factor(p) ((_height(p->lc)) - (_height(p->rc)))
 
 template <typename T>
 class bintree
@@ -146,7 +146,7 @@ protected:
     bool isunique; // pre post build
     vector<vector<string>> disp_buf;
     static inline void __updatedepth(binode<T> *&opnv) { opnv->depth = _depth(opnv->parent) + 1; }
-    static inline void __updateheight(binode<T> *&opnv) { opnv->height = max(_height(opnv->left), _height(opnv->right)) + 1; }
+    static inline void __updateheight(binode<T> *&opnv) { opnv->height = max(_height(opnv->lc), _height(opnv->rc)) + 1; }
     static inline void __updateheightabove(binode<T> *opnv)
     {
         while (opnv)
@@ -166,8 +166,8 @@ protected:
             return;
         opnv->parent = p;
         __updatedepth(opnv);
-        __update_member(opnv->left, opnv);
-        __update_member(opnv->right, opnv);
+        __update_member(opnv->lc, opnv);
+        __update_member(opnv->rc, opnv);
         __updateheight(opnv);
     }
     inline void __update_status()
@@ -189,8 +189,8 @@ protected:
         __updatedepth(node);
         while (i < hi && inorder[i] != preorder[opnv])
             i++;
-        node->left = __build_pi(opnv + 1, lo, i - 1, node);
-        node->right = __build_pi(opnv + 1 + i - lo, i + 1, hi, node);
+        node->lc = __build_pi(opnv + 1, lo, i - 1, node);
+        node->rc = __build_pi(opnv + 1 + i - lo, i + 1, hi, node);
         __updateheight(node);
         return node;
     }
@@ -203,12 +203,12 @@ protected:
         if (tp.size() == 1)
             tp.push_back(' ');
         disp_buf[root_x][root_y] = tp;
-        if (opnv->left)
+        if (opnv->lc)
             disp_buf[root_x + 1][root_y - (interval + 1) / 2] = "/ ";
-        if (opnv->right)
+        if (opnv->rc)
             disp_buf[root_x + 1][root_y + (interval + 1) / 2] = " \\";
-        __print_horizon(opnv->left, root_x + 2, left_child, (interval >> 1));
-        __print_horizon(opnv->right, root_x + 2, right_child, (interval >> 1));
+        __print_horizon(opnv->lc, root_x + 2, left_child, (interval >> 1));
+        __print_horizon(opnv->rc, root_x + 2, right_child, (interval >> 1));
     }
     void __print_vertical(binode<T> *opnv, int root_x, int root_y, int interval)
     { // root_y = 0;
@@ -219,12 +219,12 @@ protected:
         while (tp.size() < 4)
             tp.push_back(' ');
         disp_buf[root_x][root_y] = tp;
-        if (opnv->left)
+        if (opnv->lc)
             disp_buf[root_x + (interval + 1) / 2][root_y + 1] = " \\  ";
-        if (opnv->right)
+        if (opnv->rc)
             disp_buf[root_x - (interval + 1) / 2][root_y + 1] = " /  ";
-        __print_vertical(opnv->left, left_child, root_y + 2, (interval >> 1));
-        __print_vertical(opnv->right, right_child, root_y + 2, (interval >> 1));
+        __print_vertical(opnv->lc, left_child, root_y + 2, (interval >> 1));
+        __print_vertical(opnv->rc, right_child, root_y + 2, (interval >> 1));
     }
     binode<T> *__build_ip(int opnv, int lo, int hi, binode<T> *p)
     {
@@ -237,8 +237,8 @@ protected:
         __updatedepth(node);
         while (i < hi && inorder[i] != postorder[opnv])
             i++;
-        node->left = __build_ip(opnv - 1 + i - hi, lo, i - 1, node);
-        node->right = __build_ip(opnv - 1, i + 1, hi, node);
+        node->lc = __build_ip(opnv - 1 + i - hi, lo, i - 1, node);
+        node->rc = __build_ip(opnv - 1, i + 1, hi, node);
         __updateheight(node);
         return node;
     }
@@ -255,12 +255,12 @@ protected:
         sub_cnt = i - leftOfpost;
         if (i + 1 < rightOfpost) // 2 child
         {
-            opnv->left = __build_pp(leftOfpre + 1, leftOfpre + sub_cnt + 1, leftOfpost, i);
-            opnv->right = __build_pp(leftOfpre + sub_cnt + 2, rightOfpre, i + 1, rightOfpost - 1);
+            opnv->lc = __build_pp(leftOfpre + 1, leftOfpre + sub_cnt + 1, leftOfpost, i);
+            opnv->rc = __build_pp(leftOfpre + sub_cnt + 2, rightOfpre, i + 1, rightOfpost - 1);
         }
         else
         {
-            opnv->left = __build_pp(leftOfpre + 1, rightOfpre, leftOfpost, rightOfpost - 1);
+            opnv->lc = __build_pp(leftOfpre + 1, rightOfpre, leftOfpost, rightOfpost - 1);
             // only one child, default choose left
             isunique = 0;
         }
@@ -270,23 +270,23 @@ protected:
     {
         if (!opnv)
             return nullptr;
-        binode<T> *tmp = __invert(opnv->right);
-        opnv->right = __invert(opnv->left);
-        opnv->left = tmp;
+        binode<T> *tmp = __invert(opnv->rc);
+        opnv->rc = __invert(opnv->lc);
+        opnv->lc = tmp;
         return opnv;
     }
     void __earse_leaf(binode<T> *&opnv, binode<T> *p)
     {
         if (!opnv)
             return;
-        if (!opnv->left && !opnv->right)
+        if (!opnv->lc && !opnv->rc)
         {
             if (p)
                 __release(opnv);
             return;
         }
-        __earse_leaf(opnv->left, opnv);
-        __earse_leaf(opnv->right, opnv);
+        __earse_leaf(opnv->lc, opnv);
+        __earse_leaf(opnv->rc, opnv);
     }
     int __leafcount()
     {
@@ -297,12 +297,12 @@ protected:
         while (this->q.size())
         {
             tp1 = this->q.front(), this->q.pop_front();
-            if (!tp1->left && !tp1->right)
+            if (!tp1->lc && !tp1->rc)
                 cnt++;
-            if (tp1->left)
-                this->q.push_back(tp1->left);
-            if (tp1->right)
-                this->q.push_back(tp1->right);
+            if (tp1->lc)
+                this->q.push_back(tp1->lc);
+            if (tp1->rc)
+                this->q.push_back(tp1->rc);
         }
         this->q.clear();
         return cnt;
@@ -322,15 +322,15 @@ protected:
             x = this->q.front(), this->q.pop_front();
             if (x->val == target)
             {
-                __del_allSub(x->left);
-                __del_allSub(x->right);
-                x->left = x->right = nullptr;
+                __del_allSub(x->lc);
+                __del_allSub(x->rc);
+                x->lc = x->rc = nullptr;
                 continue;
             }
-            if (x->left)
-                this->q.push_back(x->left);
-            if (x->right)
-                this->q.push_back(x->right);
+            if (x->lc)
+                this->q.push_back(x->lc);
+            if (x->rc)
+                this->q.push_back(x->rc);
         }
         this->q.clear();
     }
@@ -338,8 +338,8 @@ protected:
     {
         if (!opnv)
             return;
-        __del_allSub(opnv->left);
-        __del_allSub(opnv->right);
+        __del_allSub(opnv->lc);
+        __del_allSub(opnv->rc);
         __release(opnv);
     }
     bool __treeIdentical(binode<T> *T1, binode<T> *T2)
@@ -348,8 +348,8 @@ protected:
             return 1;
         if (!T1 || !T2 || T1->val != T2->val)
             return 0;
-        bool lf = __treeIdentical(T1->left, T2->left);
-        bool rf = __treeIdentical(T1->right, T2->right);
+        bool lf = __treeIdentical(T1->lc, T2->lc);
+        bool rf = __treeIdentical(T1->rc, T2->rc);
         return lf && rf;
     }
     bool __TreeSimilar(binode<T> *T1, binode<T> *T2)
@@ -358,21 +358,21 @@ protected:
             return 1;
         if (!T1 || !T2) // if wanna test the two trees is identical , plus "|| T1->val != T2->val"
             return 0;
-        return __TreeSimilar(T1->left, T2->left) && __TreeSimilar(T1->right, T2->right);
+        return __TreeSimilar(T1->lc, T2->lc) && __TreeSimilar(T1->rc, T2->rc);
     }
     void __tree2Infix(binode<string> *opnv, int depth, string &s)
     {
         if (!opnv)
             return;
-        if (!opnv->left && !opnv->right)
+        if (!opnv->lc && !opnv->rc)
             s += opnv->val;
         else
         {
             if (depth)
                 s.push_back('(');
-            __tree2Infix(opnv->left, depth + 1, s);
+            __tree2Infix(opnv->lc, depth + 1, s);
             s += opnv->val;
-            __tree2Infix(opnv->right, depth + 1, s);
+            __tree2Infix(opnv->rc, depth + 1, s);
             if (depth)
                 s.push_back(')');
         }
@@ -383,25 +383,25 @@ protected:
         if (!opnv)
             return;
         f(opnv);
-        __recur_pre(opnv->left, f);
-        __recur_pre(opnv->right, f);
+        __recur_pre(opnv->lc, f);
+        __recur_pre(opnv->rc, f);
     }
     template <class _Function>
     void __recur_in(binode<T> *opnv, _Function f)
     {
         if (!opnv)
             return;
-        __recur_in(opnv->left, f);
+        __recur_in(opnv->lc, f);
         f(opnv);
-        __recur_in(opnv->right, f);
+        __recur_in(opnv->rc, f);
     }
     template <class _Function>
     void __recur_post(binode<T> *opnv, _Function f)
     {
         if (!opnv)
             return;
-        __recur_post(opnv->left, f);
-        __recur_post(opnv->right, f);
+        __recur_post(opnv->lc, f);
+        __recur_post(opnv->rc, f);
         f(opnv);
     }
 
@@ -409,18 +409,18 @@ protected:
     {
         if (opnv)
         {
-            __InThread(opnv->left, pre);
-            if (!opnv->left)
+            __InThread(opnv->lc, pre);
+            if (!opnv->lc)
             {
                 opnv->ltag = 1;
-                opnv->left = pre;
+                opnv->lc = pre;
             }
-            if (pre && !pre->right)
+            if (pre && !pre->rc)
             {
                 pre->rtag = 1;
-                pre->right = opnv;
+                pre->rc = opnv;
             }
-            __InThread(opnv->right, opnv);
+            __InThread(opnv->rc, opnv);
         }
     }
     double __op(double a, double b, char oper)
@@ -447,9 +447,9 @@ protected:
     {
         if (!opnv)
             return 0;
-        if (opnv->left && opnv->right)
+        if (opnv->lc && opnv->rc)
         {
-            double a = stof(__infix_val(opnv->left)), b = stof(__infix_val(opnv->right));
+            double a = stof(__infix_val(opnv->lc)), b = stof(__infix_val(opnv->rc));
             return __op(a, b, opnv->val[0]);
         }
         return stof(opnv->val);
@@ -465,10 +465,10 @@ protected:
             while (q.size())
             {
                 tp1 = q.front(), q.pop_front();
-                if (tp1->left)
-                    nexq.push_back(tp1->left);
-                if (tp1->right)
-                    nexq.push_back(tp1->right);
+                if (tp1->lc)
+                    nexq.push_back(tp1->lc);
+                if (tp1->rc)
+                    nexq.push_back(tp1->rc);
             }
             level++;
             swap(q, nexq);
@@ -558,8 +558,8 @@ public:
         if (a.size() - 1 < id)
             return nullptr;
         binode<T> *opnv = new binode<T>(a[id]);
-        opnv->left = __buildcmp(id * 2 + 1, a);
-        opnv->right = __buildcmp(id * 2 + 2, a);
+        opnv->lc = __buildcmp(id * 2 + 1, a);
+        opnv->rc = __buildcmp(id * 2 + 2, a);
         return opnv;
     }
     inline void build_cmp(vector<int> &a)
@@ -612,7 +612,7 @@ public:
     {
         if (!this->_root)
             return true;
-        return __TreeSimilar(this->_root->left, this->_root->right);
+        return __TreeSimilar(this->_root->lc, this->_root->rc);
     }
     binode<T> *convert2list()
     {
@@ -624,10 +624,10 @@ public:
         binode<T> *head = *p1;
         for (; p2 != ls.end(); p1++, p2++)
         {
-            (*p1)->left = nullptr;
-            (*p1)->right = (*p2);
+            (*p1)->lc = nullptr;
+            (*p1)->rc = (*p2);
         }
-        (*p1)->right = (*p1)->left = nullptr;
+        (*p1)->rc = (*p1)->lc = nullptr;
         return head;
     }
     string tree2infix()
@@ -656,7 +656,7 @@ public:
         {
             tp1 = this->q.front(), this->q.pop_front();
             if (tp1)
-                this->q.push_back(tp1->left), this->q.push_back(tp1->right);
+                this->q.push_back(tp1->lc), this->q.push_back(tp1->rc);
             else
                 while (this->q.size())
                 {
@@ -696,14 +696,14 @@ public:
             while (p)
             {
                 s.push(p);
-                p = p->left;
+                p = p->lc;
             }
             if (s.size())
             {
                 p = s.top();
                 s.pop();
                 resSeq.push_back(p->val);
-                p = p->right;
+                p = p->rc;
             }
         }
         this->inorder = resSeq;
@@ -720,10 +720,10 @@ public:
         {
             opnv = s.top(), s.pop();
             resSeq.push_back(opnv->val);
-            if (opnv->right)
-                s.push(opnv->right);
-            if (opnv->left)
-                s.push(opnv->left);
+            if (opnv->rc)
+                s.push(opnv->rc);
+            if (opnv->lc)
+                s.push(opnv->lc);
         }
         this->preorder = resSeq;
     }
@@ -744,10 +744,10 @@ public:
             else
             {
                 s.push(make_pair(opnv, true));
-                if (opnv->right)
-                    s.push(make_pair(opnv->right, false));
-                if (opnv->left)
-                    s.push(make_pair(opnv->left, false));
+                if (opnv->rc)
+                    s.push(make_pair(opnv->rc, false));
+                if (opnv->lc)
+                    s.push(make_pair(opnv->lc, false));
             }
         }
         this->postorder = resSeq;
@@ -772,12 +772,12 @@ public:
             return 0;
         if (root1->val != root2->val)
             return 0;
-        if (!root1->left && !root2->left)
-            return Isomprphic(root1->right, root2->right);
-        if (root1->left && root2->left && root1->left->val == root2->left->val)
-            return Isomprphic(root1->left, root2->left) && Isomprphic(root1->right, root2->right);
+        if (!root1->lc && !root2->lc)
+            return Isomprphic(root1->rc, root2->rc);
+        if (root1->lc && root2->lc && root1->lc->val == root2->lc->val)
+            return Isomprphic(root1->lc, root2->lc) && Isomprphic(root1->rc, root2->rc);
         else
-            return Isomprphic(root1->left, root2->right) && Isomprphic(root1->right, root2->left);
+            return Isomprphic(root1->lc, root2->rc) && Isomprphic(root1->rc, root2->lc);
     }
 };
 
@@ -806,7 +806,7 @@ protected:
             opnv = pq.top(), pq.pop_front();
             w = pq.top(), pq.pop_front();
             root = new binode<T>(opnv->val + w->val);
-            root->left = opnv, root->right = w;
+            root->lc = opnv, root->rc = w;
             pq.push_back(root);
         }
         this->__update_root(root);
@@ -815,10 +815,10 @@ protected:
     {
         if (!opnv)
             return;
-        if (opnv->left)
+        if (opnv->lc)
             _wpl += opnv->val;
-        __wpl(opnv->left);
-        __wpl(opnv->right);
+        __wpl(opnv->lc);
+        __wpl(opnv->rc);
     };
 
 public:
@@ -853,13 +853,13 @@ protected:
     binode<T> *_last;
     inline void __attAsL(binode<T> *&p, binode<T> *&lc)
     {
-        p->left = lc;
+        p->lc = lc;
         if (lc)
             lc->parent = p;
     }
     inline void __attAsR(binode<T> *&p, binode<T> *&rc)
     {
-        p->right = rc;
+        p->rc = rc;
         if (rc)
             rc->parent = p;
     }
@@ -869,10 +869,10 @@ protected:
         if (!opnv)
             return true;
         bool f1, f2, f;
-        f1 = __judge_avl(opnv->left, p);
+        f1 = __judge_avl(opnv->lc, p);
         f = nodeBalanced(opnv) && (p == nullptr || p->val < opnv->val);
         p = opnv;
-        f2 = __judge_avl(opnv->right, p);
+        f2 = __judge_avl(opnv->rc, p);
         return f1 && f2 & f;
     }
     binode<T> *&__search(binode<T> *&opnv, const T &x)
@@ -880,7 +880,7 @@ protected:
         if (!opnv || x == opnv->val)
             return opnv;
         _last = opnv;
-        return __search(x < opnv->val ? opnv->left : opnv->right, x);
+        return __search(x < opnv->val ? opnv->lc : opnv->rc, x);
     }
 
     binode<T> *__erase(binode<T> *&opnv, const T &x)
@@ -888,22 +888,22 @@ protected:
         if (!opnv)
             return nullptr;
         if (x < opnv->val)
-            opnv->left = __erase(opnv->left, x);
+            opnv->lc = __erase(opnv->lc, x);
         else if (opnv->val < x)
-            opnv->right = __erase(opnv->right, x);
+            opnv->rc = __erase(opnv->rc, x);
         else
         {
             binode<T> *tmp;
-            if (opnv->left && opnv->right)
+            if (opnv->lc && opnv->rc)
             {
                 tmp = opnv->successor();
                 opnv->val = tmp->val;
-                opnv->right = __erase(opnv->right, tmp->val);
+                opnv->rc = __erase(opnv->rc, tmp->val);
             }
             else
             {
                 tmp = opnv;
-                opnv = opnv->left ? opnv->left : opnv->right;
+                opnv = opnv->lc ? opnv->lc : opnv->rc;
                 bintree<T>::__release(tmp);
             }
         }
@@ -915,12 +915,12 @@ protected:
         binode<T> *w = opnv, *succ = nullptr;
         if (!opnv->has_l())
         {
-            opnv = opnv->right;
+            opnv = opnv->rc;
             succ = opnv;
         }
         else if (!opnv->has_r())
         {
-            opnv = opnv->left;
+            opnv = opnv->lc;
             succ = opnv;
         }
         else
@@ -928,8 +928,8 @@ protected:
             w = w->successor();
             swap(opnv->val, w->val);
             binode<T> *u = w->parent;
-            succ = w->right;
-            u == opnv ? u->right = succ : u->left = succ;
+            succ = w->rc;
+            u == opnv ? u->rc = succ : u->lc = succ;
         }
         last = w->parent;
         bintree<T>::__release(w);
@@ -986,9 +986,9 @@ public:
         while (walk)
         {
             if (v1 < walk->val && v2 < walk->val)
-                walk = walk->left;
+                walk = walk->lc;
             else if (walk->val < v1 && walk->val < v2)
-                walk = walk->right;
+                walk = walk->rc;
             else
                 break;
         }
@@ -1026,11 +1026,11 @@ public:
 protected:
     inline void _zig(binode<T> *&opnv)
     {
-        binode<T> *tmp = opnv->left;
-        opnv->left = tmp->right;
-        if (tmp->right)
-            tmp->right->parent = opnv;
-        tmp->right = opnv;
+        binode<T> *tmp = opnv->lc;
+        opnv->lc = tmp->rc;
+        if (tmp->rc)
+            tmp->rc->parent = opnv;
+        tmp->rc = opnv;
         tmp->parent = opnv->parent;
         opnv->parent = tmp;
         bintree<T>::__updateheight(opnv);
@@ -1039,11 +1039,11 @@ protected:
     }
     inline void _zag(binode<T> *&opnv)
     {
-        binode<T> *tmp = opnv->right;
-        opnv->right = tmp->left;
-        if (tmp->left)
-            tmp->left->parent = opnv;
-        tmp->left = opnv;
+        binode<T> *tmp = opnv->rc;
+        opnv->rc = tmp->lc;
+        if (tmp->lc)
+            tmp->lc->parent = opnv;
+        tmp->lc = opnv;
         tmp->parent = opnv->parent;
         opnv->parent = tmp;
         bintree<T>::__updateheight(opnv);
@@ -1052,12 +1052,12 @@ protected:
     }
     inline void _zigzag(binode<T> *&opnv)
     {
-        _zag(opnv->left);
+        _zag(opnv->lc);
         _zig(opnv);
     }
     inline void _zagzig(binode<T> *&opnv)
     {
-        _zig(opnv->right);
+        _zig(opnv->rc);
         _zag(opnv);
     }
     void __insert(binode<T> *&opnv, const T &x, binode<T> *p)
@@ -1071,17 +1071,17 @@ protected:
         }
         else if (x < opnv->val)
         {
-            __insert(opnv->left, x, opnv);
+            __insert(opnv->lc, x, opnv);
             bintree<T>::__updateheight(opnv);
             if (_factor(opnv) == 2)
-                _factor(opnv->left) == 1 ? _zig(opnv) : _zigzag(opnv);
+                _factor(opnv->lc) == 1 ? _zig(opnv) : _zigzag(opnv);
         }
         else if (x > opnv->val)
         {
-            __insert(opnv->right, x, opnv);
+            __insert(opnv->rc, x, opnv);
             bintree<T>::__updateheight(opnv);
             if (_factor(opnv) == -2)
-                _factor(opnv->right) == -1 ? _zag(opnv) : _zagzig(opnv);
+                _factor(opnv->rc) == -1 ? _zag(opnv) : _zagzig(opnv);
         }
     }
 
@@ -1091,40 +1091,40 @@ protected:
             return nullptr;
         if (x < opnv->val)
         {
-            opnv->left = __erase(opnv->left, x);
+            opnv->lc = __erase(opnv->lc, x);
             bintree<T>::__updateheight(opnv);
             if (_factor(opnv) == -2)
-                _factor(opnv->right) == -1 ? _zag(opnv) : _zagzig(opnv);
+                _factor(opnv->rc) == -1 ? _zag(opnv) : _zagzig(opnv);
         }
         else if (opnv->val < x)
         {
-            opnv->right = __erase(opnv->right, x);
+            opnv->rc = __erase(opnv->rc, x);
             bintree<T>::__updateheight(opnv);
             if (_factor(opnv) == 2)
-                (_factor(opnv->left) == 1) ? _zig(opnv) : _zigzag(opnv);
+                (_factor(opnv->lc) == 1) ? _zig(opnv) : _zigzag(opnv);
         }
         else // find it
         {
             binode<T> *tmp;
-            if (opnv->right && opnv->left)
+            if (opnv->rc && opnv->lc)
             {
                 if (_factor(opnv) > 0)
                 {
                     tmp = opnv->precessor();
                     opnv->val = tmp->val;
-                    opnv->left = __erase(opnv->left, tmp->val);
+                    opnv->lc = __erase(opnv->lc, tmp->val);
                 }
                 else
                 {
                     tmp = opnv->successor();
                     opnv->val = tmp->val;
-                    opnv->right = __erase(opnv->right, tmp->val);
+                    opnv->rc = __erase(opnv->rc, tmp->val);
                 }
             }
             else
             {
                 tmp = opnv;
-                opnv = opnv->left ? opnv->left : opnv->right;
+                opnv = opnv->lc ? opnv->lc : opnv->rc;
                 bintree<T>::__release(tmp);
             }
         }
@@ -1151,26 +1151,26 @@ protected:
 //                 break;
 //             if (opnv->is_l())
 //                 if (p->is_l())
-//                     this->__attAsL(g, p->right), this->__attAsL(p, opnv->right), this->__attAsR(p, g), this->__attAsR(opnv, p);
+//                     this->__attAsL(g, p->rc), this->__attAsL(p, opnv->rc), this->__attAsR(p, g), this->__attAsR(opnv, p);
 //                 else
-//                     this->__attAsL(p, opnv->right), this->__attAsR(g, opnv->left), this->__attAsL(opnv, g), this->__attAsR(opnv, p);
+//                     this->__attAsL(p, opnv->rc), this->__attAsR(g, opnv->lc), this->__attAsL(opnv, g), this->__attAsR(opnv, p);
 //             else if (p->is_r())
-//                 this->__attAsR(g, p->left), this->__attAsR(p, opnv->left), this->__attAsL(p, g), this->__attAsL(opnv, p);
+//                 this->__attAsR(g, p->lc), this->__attAsR(p, opnv->lc), this->__attAsL(p, g), this->__attAsL(opnv, p);
 //             else
-//                 this->__attAsR(p, opnv->left), this->__attAsL(g, opnv->right), this->__attAsR(opnv, g), this->__attAsL(opnv, p);
+//                 this->__attAsR(p, opnv->lc), this->__attAsL(g, opnv->rc), this->__attAsR(opnv, g), this->__attAsL(opnv, p);
 //             if (!gg)
 //                 opnv->parent = nullptr;
 //             else
-//                 g == gg->left ? this->__attAsL(gg, opnv) : this->__attAsR(gg, opnv);
+//                 g == gg->lc ? this->__attAsL(gg, opnv) : this->__attAsR(gg, opnv);
 //             bintree<T>::__updateheight(g), bintree<T>::__updateheight(p), bintree<T>::__updateheight(opnv);
 //         }
 //         p = opnv->parent;
 //         if (p)
 //         {
 //             if (opnv->is_l())
-//                 this->__attAsL(p, opnv->right), this->__attAsR(opnv, p);
+//                 this->__attAsL(p, opnv->rc), this->__attAsR(opnv, p);
 //             else
-//                 this->__attAsR(p, opnv->left), this->__attAsL(opnv, p);
+//                 this->__attAsR(p, opnv->lc), this->__attAsL(opnv, p);
 //             bintree<T>::__updateheight(p), bintree<T>::__updateheight(opnv);
 //         }
 //         opnv->parent = nullptr;
@@ -1494,15 +1494,15 @@ protected:
     static inline bool _red(binode<T> *&opnv) { return !_blk(opnv); }
     static inline void __alterheight(binode<T> *&opnv)
     {
-        opnv->height = max(_height(opnv->left), _height(opnv->right));
+        opnv->height = max(_height(opnv->lc), _height(opnv->rc));
         opnv->height += _blk(opnv) ? 1 : 0;
     }
     static inline bool _blk_altered(binode<T> *&opnv)
     {
-        return _height(opnv->left) == _height(opnv->right) &&
+        return _height(opnv->lc) == _height(opnv->rc) &&
                        opnv->height == _red(opnv)
-                   ? _height(opnv->left)
-                   : _height(opnv->left) + 1;
+                   ? _height(opnv->lc)
+                   : _height(opnv->lc) + 1;
     }
 
     void __double_red_solution(binode<T> *)
