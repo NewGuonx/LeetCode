@@ -60,8 +60,7 @@ struct binode
     binode *lc, *rc, *parent;
     int height, depth, ltag, rtag;
     RBColor color;
-    binode(const T &x, binode<T> *p = nullptr, binode<T> *l = nullptr, binode<T> *r = nullptr, RBColor cl = blk) : \
-    val(x), lc(l), rc(r), parent(p), height(0) ,color(cl) {}
+    binode(const T &x, binode<T> *p = nullptr, binode<T> *l = nullptr, binode<T> *r = nullptr, RBColor cl = blk) : val(x), lc(l), rc(r), parent(p), height(0), color(cl) {}
     bool inline is_l()
     {
         return parent && parent->lc == this;
@@ -130,9 +129,6 @@ struct binode
     }
 };
 
-
-
-
 template <typename T>
 struct bnode
 {
@@ -159,3 +155,4 @@ struct bnode
 
 }; // namespace dsa
 #endif
+using namespace dsa;

@@ -1,7 +1,7 @@
 // author - sonaspy@outlook.com
 // coding - utf_8
 
-#define SIZE 1000000
+#define SIZE 1000
 #include <bits/stdc++.h>
 #include "dsa.h"
 #define test() freopen("in", "r", stdin)
@@ -15,10 +15,10 @@ int main(int argc, char const *argv[])
     //test();
     srand(time(NULL));
     int b[SIZE];
-    generate(b, b + SIZE, [&]() { return rand(); });
+    generate(b, b + SIZE, [&]() { return rand() % 10000; });
     iota(b, b + SIZE, 0);
     vector<int> a(b, b + SIZE);
-    btree<int> bt(256);
+    btree<int> bt(4);
     bt.build(a);
     clock_t startTime, endTime;
     //bt.printTree();
