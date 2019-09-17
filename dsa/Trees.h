@@ -85,14 +85,16 @@ struct binode
     inline bool operator==(const binode *&bn) { return val == bn->val; }
     inline bool operator<(const binode *&bn) { return val < bn->val; }
     inline bool operator>(const binode *&bn) { return val > bn->val; }
-    binode *successor()
+    inline binode *successor()
     {
         return this->right ? __getmin(this->right) : nullptr;
     }
-    binode *precessor()
+    inline binode *precessor()
     {
         return this->left ? __getmax(this->left) : nullptr;
     }
+    inline binode *uncle() { this->parent->is_l() ? this->parent->parent->right : this->parent->parent->left; }
+
     inline void insert_l(const T &x)
     {
         left = new binode(x, this);
@@ -119,6 +121,8 @@ struct binode
         return cnt;
     }
 };
+#define FromParentTo(x) \
+    ((x)->isroot() ? this->_root : ((x)->is_l() ? (x)->parent->left : (x)->parent->right))
 
 template <typename T>
 class bintree
