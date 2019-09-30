@@ -19,27 +19,18 @@ public:
     ListNode *removeNthFromEnd(ListNode *head, int n)
     {
         int count = 0;
-        ListNode *walk, *pre, *dummy = new ListNode(0);
-        dummy->next = head;
-        pre = dummy;
-        walk = head;
-        while (walk)
-        {
-            walk = walk->next;
-            count++;
-        }
-        if (!n || n > count)
-            return head;
-        n = count - n;
-        count = 0;
-        walk = head;
-        while (walk && count < n)
-        {
-            pre = walk;
-            walk = walk->next;
-            count++;
-        }
-        pre->next = walk->next;
+        ListNode *walk, *fast, *dummy = new ListNode(0), *tmp;
+        dummy->next = fast = walk = head;
+        for (int i = 0; i < n; ++i)
+            fast = fast->next;
+        if (fast)
+            for (; fast->next; fast = fast->next, walk = walk->next)
+                ;
+        else
+            walk = dummy;
+        tmp = walk->next;
+        walk->next = walk->next->next;
+        delete tmp;
         return dummy->next;
     }
 };
