@@ -17,30 +17,39 @@ class Solution
 public:
     void reorderList(ListNode *head)
     {
-        if (!head || !head->next || !head->next->next)
+        if (!head || !head->next)
             return;
-        vector<ListNode *> v;
-        ListNode *p = head, dummy = ListNode(0);
-        for (; p; p = p->next)
-            v.push_back(p);
-        int n = v.size();
-        p = &dummy;
-        bool flag = 1;
-        for (int i = 0; i < n / 2; i++)
-        {
-            p->next = v[i];
-            p = p->next;
-            p->next = v[n - 1 - i];
-            p = p->next;
-        }
-        if (n % 2)
-        {
-            p->next = v[n / 2];
-            p = p->next;
-        }
-        p->next = nullptr;
+        ListNode * slow = head, *fast = head , *prev = nullptr, *walk, *tmp;
+        for(; fast && fast->next; prev = slow, slow = slow->next, fast = fast->next->next);
+        prev->next = nullptr; // cut middle;
+
+    	slow = reverse(slow); // reverse post half part
+    	
+    	walk =  head;
+    	while(walk->next){
+    		tmp = walk->next;
+    		walk->next = slow;
+    		slow = slow->next;
+    		walk->next->next = tmp;
+    		walk = tmp;
+    	}
+    	walk->next = slow;
+    }
+    ListNode* reverse(ListNode * head){
+    	if (!head || !head->next |)
+            return head;
+       	ListNode * walk = head, *dummy = new ListNode(0), *tmp;
+       	while(walk){
+       		tmp = walk->next;
+       		walk->next = dummy->next;
+       		dummy->next = walk;
+       		walk = tmp;
+       	}
+       	return dummy->next;
     }
 };
+
+
 int main(int argc, char const **argv)
 {
     /* code */
