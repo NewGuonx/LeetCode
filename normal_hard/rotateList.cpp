@@ -19,27 +19,17 @@ public:
     {
         if (!head || (!k))
             return head;
-        ListNode *walk, *pre, *post, *mid;
-        int step = 0, n = 0;
-
-        for (walk = head; walk; walk = walk->next, n++)
+        int n = 1;
+        ListNode *walk;
+        for (walk = head; walk->next; walk = walk->next, n++)
             ;
-        k %= n;
-        if (!k)
-            return head;
-        for (walk = head; walk; walk = walk->next, step++)
-        {
-            if (step == n - k - 1)
-            {
-                pre = walk;
-                mid = walk->next;
-            }
-            if (!walk->next)
-                post = walk;
-        }
-        post->next = head;
-        pre->next = nullptr;
-        return mid;
+        k = n - k % n;
+        walk->next = head;
+        for (int i = 0; i < k; i++)
+            walk = walk->next;
+        head = walk->next;
+        walk->next = nullptr;
+        return head;
     }
 };
 int main(int argc, char const *argv[])

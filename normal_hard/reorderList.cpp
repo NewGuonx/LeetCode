@@ -19,56 +19,44 @@ public:
     {
         if (!head || !head->next)
             return;
-        ListNode * slow = head, *fast = head , *prev = nullptr, *walk, *tmp;
-        for(; fast && fast->next; prev = slow, slow = slow->next, fast = fast->next->next);
-        prev->next = nullptr; // cut middle;
+        ListNode *posthalf = head, *tail = head, *last = nullptr, *walk, *tmp;
+        for (; tail && tail->next; last = posthalf, posthalf = posthalf->next, tail = tail->next->next)
+            ;
+        last->next = nullptr; // cut middle;
 
-    	slow = reverse(slow); // reverse post half part
-    	
-    	walk =  head;
-    	while(walk->next){
-    		tmp = walk->next;
-    		walk->next = slow;
-    		slow = slow->next;
-    		walk->next->next = tmp;
-    		walk = tmp;
-    	}
-    	walk->next = slow;
+        posthalf = reverse(posthalf); // reverse post half part
+
+        walk = head;
+        while (walk->next)
+        {
+            tmp = walk->next;
+            walk->next = posthalf;
+            posthalf = posthalf->next;
+            walk->next->next = tmp;
+            walk = tmp;
+        }
+        walk->next = posthalf;
     }
-    ListNode* reverse(ListNode * head){
-    	if (!head || !head->next |)
+    ListNode *reverse(ListNode *head)
+    {
+        if (!head || !head->next)
             return head;
-       	ListNode * walk = head, *dummy = new ListNode(0), *tmp;
-       	while(walk){
-       		tmp = walk->next;
-       		walk->next = dummy->next;
-       		dummy->next = walk;
-       		walk = tmp;
-       	}
-       	return dummy->next;
+        ListNode *walk = head, *dummy = new ListNode(0), *tmp;
+        while (walk)
+        {
+            tmp = walk->next;
+            walk->next = dummy->next;
+            dummy->next = walk;
+            walk = tmp;
+        }
+        return dummy->next;
     }
 };
-
 
 int main(int argc, char const **argv)
 {
     /* code */
     //test();
-    ListNode *head = new ListNode(0), *p = head;
-    int i = 1, n = 3;
-    while (n--)
-    {
-        p->next = new ListNode(i);
-        p = p->next;
-        i++;
-    }
-    Solution s;
-    s.reorderList(head);
-    p = head;
-    while (p)
-    {
-        cout << p->val << " ";
-        p = p->next;
-    }
+
     return 0;
 }

@@ -13,7 +13,6 @@ struct ListNode
     ListNode *next;
     ListNode(int x) : val(x), next(NULL) {}
 };
-
 class Solution
 {
 public:
@@ -21,26 +20,31 @@ public:
     {
         if (!head || !head->next || k < 2)
             return head;
-        ListNode *next, *pre, *walk, *dummy = new ListNode(1), *last, *post;
-        dummy->next = head;
-        for (pre = dummy, last = head; last != nullptr; last = pre->next)
+        ListNode *dummy = new ListNode(1), *b, *walk, *prev = dummy, *tmp;
+        walk = b = dummy->next = head;
+        for (int i = 1; walk; i++, walk = tmp)
         {
-            for (int i = 1; i < k && last != nullptr; i++)
-                last = last->next;
-            if (!last)
-                break;
-            pre = func(pre, pre->next, last);
+            tmp = walk->next;
+            if (i % k == 0)
+            {
+                prev = __reverse(prev, b, walk);
+                b = tmp;
+            }
         }
         return dummy->next;
     }
-    ListNode *func(ListNode *pre, ListNode *begin, ListNode *end)
+    ListNode *__reverse(ListNode *pre, ListNode *_first, ListNode *_last)
     {
-        ListNode *end_next = end->next;
-        for (ListNode *p = begin, *cur = p->next, *next = cur->next; cur != end_next; p = cur, cur = next, next = next ? next->next : nullptr)
-            cur->next = p;
-        begin->next = end_next;
-        pre->next = end;
-        return begin;
+        ListNode *tmp, *walk = _first, *_end = _last->next;
+        pre->next = _end;
+        while (walk != _end)
+        {
+            tmp = walk->next;
+            walk->next = pre->next;
+            pre->next = walk;
+            walk = tmp;
+        }
+        return _first;
     }
 };
 int main(int argc, char const *argv[])

@@ -20,25 +20,14 @@ public:
     {
         if (!head || !head->next)
             return head;
-        ListNode *next, *pre, *walk, *dummy = new ListNode(1);
-        pre = dummy, walk = head, next = walk->next;
-        int cnt = 0;
-        while (next)
+        ListNode *next, *pre, *walk, *dummy = new ListNode(0);
+        dummy->next = head;
+        pre = dummy, walk = pre->next, next = walk->next;
+        for (; next; pre = walk, walk = walk->next, next = walk ? walk->next : nullptr)
         {
-            if (cnt % 2 == 0)
-            {
-                pre->next = next;
-                walk->next = next->next;
-                next->next = walk;
-                pre = next;
-                next = walk->next;
-            }
-            else{
-                pre = pre->next;
-                walk = walk->next;
-                next = next->next;
-            }
-            cnt++;
+            pre->next = next;
+            walk->next = next->next;
+            next->next = walk;
         }
         return dummy->next;
     }
