@@ -16,17 +16,40 @@ struct ListNode
 
 class Solution
 {
-  public:
+public:
     bool hasCycle(ListNode *head)
     {
-        while(head){
-            if(st.count(head))return true;
-            st.insert(head);
-            head = head->next;
+        ListNode *slow, *fast;
+        slow = fast = head;
+        while (fast && fast->next)
+        {
+            slow = slow->next;
+            fast = fast->next->next;
+            if (fast == slow)
+                return true;
         }
         return false;
     }
-    unordered_set<ListNode*> st;
+    ListNode *detectCycle(ListNode *head)
+    {
+        ListNode *slow, *fast, *b;
+        b = slow = fast = head;
+        while (fast && fast->next)
+        {
+            slow = slow->next;
+            fast = fast->next->next;
+            if (fast == slow)
+            {
+                while (b != slow)
+                {
+                    b = b->next;
+                    slow = slow->next;
+                }
+                return slow;
+            }
+        }
+        return nullptr;
+    }
 };
 int main(int argc, char const *argv[])
 {
