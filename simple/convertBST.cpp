@@ -15,7 +15,7 @@ struct TreeNode
 };
 class Solution
 {
-  public:
+public:
     TreeNode *convertBST(TreeNode *root)
     {
         int sum = 0;

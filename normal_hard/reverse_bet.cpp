@@ -20,18 +20,24 @@ public:
     {
         if (!head)
             return head;
-        ListNode *dummy = new ListNode(1);
+        ListNode *dummy = new ListNode(1), *pre, *endnext, *walk, *tmp;
         dummy->next = head;
-        ListNode *pre = dummy;
-        for (int i = 0; i < m - 1; i++)
-            pre = pre->next;
-        ListNode *walk = pre->next, *tmp;
-        for (int i = m; i < n; i++)
+        walk = dummy;
+        for (int i = 0; i <= n; i++, walk = walk->next)
+        {
+            if (i == m - 1)
+                pre = walk;
+            if (i == n)
+                endnext = walk->next;
+        }
+        walk = pre->next;
+        pre->next = endnext;
+        for (int i = m; i <= n; i++)
         {
             tmp = walk->next;
-            walk->next = tmp->next;
-            tmp->next = pre->next;
-            pre->next = tmp;
+            walk->next = pre->next;
+            pre->next = walk;
+            walk = tmp;
         }
         return dummy->next;
     }

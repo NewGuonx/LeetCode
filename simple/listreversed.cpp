@@ -11,24 +11,26 @@ struct ListNode
 {
     int val;
     ListNode *next;
-    ListNode(int x) : val(x), next(NULL) {}
+    ListNode(int x) : val(x), next(nullptr) {}
 };
 
 class Solution
 {
-  public:
+public:
     ListNode *reverseList(ListNode *head)
     {
-        if(!head)return nullptr;
-        ListNode* walk = head, *post = head->next, *pre = nullptr;
-        while(walk){
-            walk->next =pre;
-            pre = walk;
-            walk = post;
-            if(post)
-            post = post->next;
+        if (!head)
+            return nullptr;
+        ListNode *walk, *tmp, *dummy = new ListNode(0);
+        walk = head;
+        while (walk)
+        {
+            tmp = walk->next;
+            walk->next = dummy->next;
+            dummy->next = walk;
+            walk = tmp;
         }
-        return pre;
+        return dummy->next;
     }
 };
 int main(int argc, char const *argv[])

@@ -29,7 +29,7 @@ public:
         if (!head)
             return nullptr;
         int n = 0;
-        h = head;
+        l_ptr = head;
         while (head)
         {
             head = head->next;
@@ -39,18 +39,21 @@ public:
     }
 
 private:
-    ListNode *h;
+    ListNode *l_ptr;
     TreeNode *sortedListToBST(int lo, int hi)
     {
         if (hi < lo)
             return nullptr;
+
         int mid = lo + (hi - lo) / 2;
-        TreeNode *left = sortedListToBST(lo, mid - 1);
-        TreeNode *p = new TreeNode(h->val);
-        p->left = left;
-        h = h->next;
-        TreeNode *right = sortedListToBST(mid + 1, hi);
-        p->right = right;
+
+        TreeNode *lc = sortedListToBST(lo, mid - 1);
+
+        TreeNode *p = new TreeNode(l_ptr->val);
+        p->left = lc;
+        l_ptr = l_ptr->next;
+
+        p->right = sortedListToBST(mid + 1, hi);
         return p;
     }
 };

@@ -32,20 +32,20 @@ public:
     }
     ListNode *detectCycle(ListNode *head)
     {
-        ListNode *slow, *fast, *b;
-        b = slow = fast = head;
+        ListNode *slow, *fast, *walk;
+        walk = slow = fast = head;
         while (fast && fast->next)
         {
             slow = slow->next;
             fast = fast->next->next;
             if (fast == slow)
             {
-                while (b != slow)
+                while (walk != slow)
                 {
-                    b = b->next;
+                    walk = walk->next;
                     slow = slow->next;
                 }
-                return slow;
+                return walk;
             }
         }
         return nullptr;

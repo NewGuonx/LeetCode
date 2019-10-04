@@ -24,16 +24,17 @@ public:
         ListNode *walk = &dummy, *pa = l1, *pb = l2;
         while (pa || pb)
         {
-            a = !pa ? 0 : pa->val;
-            b = !pb ? 0 : pb->val;
+            a = pa ? pa->val : 0;
+            b = pb ? pb->val : 0;
             num = (a + b + carry) % 10;
             carry = (a + b + carry) / 10;
             walk->next = new ListNode(num);
             walk = walk->next;
-            pa = !pa ? nullptr : pa->next;
-            pb = !pb ? nullptr : pb->next;
+            pa = pa ? pa->next : nullptr;
+            pb = pb ? pb->next : nullptr;
         }
-        if(carry)walk->next = new ListNode(1);
+        if (carry)
+            walk->next = new ListNode(carry);
         return dummy.next;
     }
 };

@@ -21,27 +21,23 @@ public:
     {
         if (!head || !head->next)
             return head;
-        ListNode *walk, *v = new ListNode(0), *v1 = new ListNode(0), *vwalk = nullptr, *v1walk = nullptr;
-        for (walk = head, vwalk = v, v1walk = v1; walk; walk = walk->next)
+        ListNode *walk, *l_dummy = new ListNode(0), *r_dummy = new ListNode(0), *p1, *p2;
+        for (walk = head, p1 = l_dummy, p2 = r_dummy; walk; walk = walk->next)
         {
             if (walk->val < x)
             {
-                vwalk->next = new ListNode(walk->val);
-                vwalk = vwalk->next;
+                p1->next = walk;
+                p1 = p1->next;
             }
             else
             {
-                v1walk->next = new ListNode(walk->val);
-                v1walk = v1walk->next;
+                p2->next = walk;
+                p2 = p2->next;
             }
         }
-        if (v->next)
-        {
-            vwalk->next = v1->next;
-            return v->next;
-        }
-        else
-            return v1->next;
+        p1->next = r_dummy->next;
+        p2->next = nullptr;
+        return l_dummy->next;
     }
 };
 int main(int argc, char const *argv[])
