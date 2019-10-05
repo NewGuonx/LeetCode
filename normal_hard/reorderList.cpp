@@ -19,25 +19,26 @@ public:
     {
         if (!head || !head->next)
             return;
-        ListNode *posthalf = head, *tail = head, *last = nullptr, *walk, *tmp;
-        for (; tail && tail->next; last = posthalf, posthalf = posthalf->next, tail = tail->next->next)
+        ListNode *slow = head, *fast = head, *walk, *tmp;
+        for (; fast->next && fast->next->next; slow = slow->next, fast = fast->next->next)
             ;
-        last->next = nullptr; // cut middle;
+        fast = slow, slow = slow->next;
+        fast->next = nullptr;
 
-        posthalf = reverse(posthalf); // reverse post half part
+        slow = __reverse(slow); // __reverse post half part
 
         walk = head;
         while (walk->next)
         {
             tmp = walk->next;
-            walk->next = posthalf;
-            posthalf = posthalf->next;
+            walk->next = slow;
+            slow = slow->next;
             walk->next->next = tmp;
             walk = tmp;
         }
-        walk->next = posthalf;
+        walk->next = slow;
     }
-    ListNode *reverse(ListNode *head)
+    ListNode *__reverse(ListNode *head)
     {
         if (!head || !head->next)
             return head;

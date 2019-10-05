@@ -17,54 +17,27 @@ class Solution
 public:
     ListNode *sortList(ListNode *head)
     {
-        ListNode dummyHead(0);
-        dummyHead.next = head;
-        auto p = head;
-        int length = 0;
-        while (p)
-        {
-            ++length;
-            p = p->next;
-        }
-        for (int len = 1; len < length; len *= 2)
-        {
-            auto cur = dummyHead.next;
-            auto p = &dummyHead;
-            while (cur)
-            {
-                auto left = cur;
-                auto right = truncate(left, len); // left->@->@ right->@->@->@...
-                cur = truncate(right, len);       // left->@->@ right->@->@  cur->@->...
-                p->next = merge(left, right);
-                while (p->next)
-                    p = p->next;
-            }
-        }
-        return dummyHead.next;
+        if (!head || !head->next)
+            return head;
+        ListNode *slow, *fast;
+        for (slow = fast = head; fast->next && fast->next->next; fast = fast->next->next, slow = slow->next)
+            ;
+        fast = slow, slow = slow->next;
+        fast->next = nullptr;
+        return __merge(sortList(head), sortList(slow));
     }
-    ListNode *truncate(ListNode *head, int n)
+    ListNode *__merge(ListNode *l1, ListNode *l2)
     {
-        while (--n && head)
-            head = head->next;
-        if (!head)
-            return nullptr;
-        auto next = head->next;
-        head->next = nullptr;
-        return next;
-    }
-    ListNode *merge(ListNode *l1, ListNode *l2)
-    {
-        ListNode dummyHead(0);
-        auto p = &dummyHead;
-        for (; l1 && l2; p = p->next)
+        ListNode *_dummy = new ListNode(0), *walk = _dummy;
+        for (; l1 && l2; walk = walk->next)
         {
             if (l1->val < l2->val)
-                p->next = l1, l1 = l1->next;
+                walk->next = l1, l1 = l1->next;
             else
-                p->next = l2, l2 = l2->next;
+                walk->next = l2, l2 = l2->next;
         }
-        p->next = l1 ? l1 : l2;
-        return dummyHead.next;
+        walk->next = l1 ? l1 : l2;
+        return _dummy->next;
     }
 };
 int main(int argc, char const *argv[])

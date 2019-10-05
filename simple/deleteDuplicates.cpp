@@ -23,19 +23,39 @@ struct ListNode
 
 class Solution
 {
-  public:
+public:
     ListNode *deleteDuplicates(ListNode *head)
     {
+        if (!head || !head->next)
+            return head;
         ListNode *walk = head, *fixed = head;
+        int data;
         while (fixed)
         {
-            int data = fixed->val;
+            data = fixed->val;
             while ((walk = walk->next) && walk->val == data)
                 ;
             fixed->next = walk;
             fixed = walk;
         }
         return head;
+    }
+    ListNode *deleteDuplicates(ListNode *head)
+    {
+        if (!head || !head->next)
+            return head;
+        bool hasdup;
+        ListNode *walk, *valid_p, *dummy = new ListNode(0);
+        dummy->next = head;
+        for (walk = head, valid_p = dummy; walk; walk = walk->next)
+        {
+            for (hasdup = false; walk->next && walk->val == walk->next->val; walk = walk->next)
+                hasdup = true;
+            if (!hasdup)
+                valid_p->next = walk, valid_p = walk;
+        }
+        valid_p->next = nullptr;
+        return dummy->next;
     }
 };
 int main(int argc, char const *argv[])

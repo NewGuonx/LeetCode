@@ -19,19 +19,20 @@ public:
     ListNode *insertionSortList(ListNode *head)
     {
         ListNode dummy(INT_MIN);
-        for (ListNode *cur = head; cur;)
+        ListNode *pos, *tmp;
+        for (ListNode *walk = head; walk; walk = tmp)
         {
-            ListNode *pos = findPos(&dummy, cur->val), *tmp = cur->next;
-            cur->next = pos->next;
-            pos->next = cur;
-            cur = tmp;
+            tmp = walk->next;
+            pos = findPos(&dummy, walk->val);
+            walk->next = pos->next;
+            pos->next = walk;
         }
         return dummy.next;
     }
-    ListNode *findPos(ListNode *head, int x)
+    ListNode *findPos(ListNode *_begin, int x)
     {
-        ListNode *pre = head;
-        for (ListNode *cur = head; cur && cur->val <= x; pre = cur, cur = cur->next)
+        ListNode *pre = _begin;
+        for (ListNode *walk = _begin; walk && walk->val <= x; pre = walk, walk = walk->next)
             ;
         return pre;
     }
