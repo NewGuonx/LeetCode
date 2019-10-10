@@ -24,7 +24,7 @@ struct TreeNode
 
 class Solution
 {
-  public:
+public:
     // vector<vector<int>> levelOrderBottom(TreeNode *root)
     // {
     //     vector<vector<int>> res;

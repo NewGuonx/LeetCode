@@ -29,20 +29,20 @@ public:
     {
         if (n == 0)
             return vector<TreeNode *>();
-        return gen(1, n);
+        return __generate_trees(1, n);
     }
-    vector<TreeNode *> gen(int begin, int end)
+    vector<TreeNode *> __generate_trees(int begin, int end)
     {
         vector<TreeNode *> res;
-        if (begin > end)
+        if (end < begin)
         {
-            res.push_back(NULL);
+            res.push_back(nullptr);
             return res;
         }
         for (int i = begin; i <= end; ++i)
         {
-            vector<TreeNode *> left_trees = gen(begin, i - 1);
-            vector<TreeNode *> right_trees = gen(i + 1, end);
+            vector<TreeNode *> left_trees = __generate_trees(begin, i - 1);
+            vector<TreeNode *> right_trees = __generate_trees(i + 1, end);
             for (auto l : left_trees)
             {
                 for (auto r : right_trees)

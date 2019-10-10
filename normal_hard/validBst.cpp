@@ -13,6 +13,7 @@ struct TreeNode
     TreeNode *right;
     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
 };
+
 class Solution
 {
 public:
@@ -20,31 +21,17 @@ public:
     {
         if (!root)
             return true;
-        inorder(root);
-        return f;
+        TreeNode *p = nullptr;
+        return inorder(root, p);
     }
 
 private:
-    bool f = true;
-    int64_t v = -(INT64_MAX);
-    void inorder(TreeNode *root)
+    bool inorder(TreeNode *root, TreeNode *&p)
     {
-        if (!f)
-            return;
-        if (root->left)
-            inorder(root->left);
-        if (f)
-        {
-            f = (root->val > v) ? true : false;
-            v = root->val;
-        }
-        if (root->right)
-            inorder(root->right);
+        if (!root)
+            return true;
+        bool f = inorder(root->left, p) && (!p || p->val < root->val);
+        p = root;
+        return f && inorder(root->right, p);
     }
 };
-int main(int argc, char const *argv[])
-{
-    /* code */
-    //test();
-    return 0;
-}
