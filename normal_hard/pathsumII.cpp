@@ -16,32 +16,32 @@ struct TreeNode
 class Solution
 {
 public:
-    vector<vector<int>> pathSum(TreeNode *root, int sum)
+    vector<vector<int>> pathSum(TreeNode *__root, int sum)
     {
-        if (!root)
+        if (!__root)
             return res;
         this->sum = sum;
-        this->tmpsum = 0;
-        dfs(root);
+        this->__tpsum = 0;
+        __trav(__root);
         return res;
     }
 
 private:
-    vector<int> path;
+    vector<int> __path;
     vector<vector<int>> res;
-    int sum, tmpsum;
-    void dfs(TreeNode *root)
+    int sum, __tpsum;
+    void __trav(TreeNode *__root)
     {
-        if (!root)
+        if (!__root)
             return;
-        path.push_back(root->val);
-        tmpsum += root->val;
-        if (!root->left && !root->right && tmpsum == sum)
-            res.push_back(path);
-        dfs(root->left);
-        dfs(root->right);
-        path.pop_back();
-        tmpsum -= root->val;
+        __path.push_back(__root->val);
+        __tpsum += __root->val;
+        if (!__root->left && !__root->right && __tpsum == sum)
+            res.push_back(__path);
+        __trav(__root->left);
+        __trav(__root->right);
+        __path.pop_back();
+        __tpsum -= __root->val;
     }
 };
 int main(int argc, char const *argv[])

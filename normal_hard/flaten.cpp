@@ -18,20 +18,18 @@ class Solution
 public:
     void flatten(TreeNode *root)
     {
-        this->tmp = nullptr;
+        this->p = nullptr;
         postorder(root);
     }
-
 private:
-    TreeNode *tmp;
+    TreeNode *p;
     void postorder(TreeNode *&root)
     {
-        if (!root) return;
-        postorder(root->right);
-        postorder(root->left);
-        root->right = tmp;
-        root->left = nullptr;
-        tmp = root;
+        if (!root)
+            return;
+        postorder(root->right), postorder(root->left);
+        root->right = p, root->left = nullptr;
+        p = root;
     }
 };
 int main(int argc, char const *argv[])

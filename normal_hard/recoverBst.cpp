@@ -20,24 +20,44 @@ public:
     {
         if (!root)
             return;
-        inorder(root);
-        int i, j;
-        for (i = 1; i < v.size() && v[i]->val > v[i - 1]->val; i++)
-            ;
-        for (j = v.size() - 2; j > -1 && v[j]->val < v[j + 1]->val; j--)
-            ;
-        swap(v[i - 1]->val, v[j + 1]->val);
+        TreeNode *p = nullptr;
+        f = 0;
+        inorder(root, p);
+        f = 0, p = nullptr;
+        inorder_(root, p);
+        swap(v1->val, v2->val);
     }
 
 private:
-    vector<TreeNode *> v;
-    void inorder(TreeNode *root)
+    TreeNode *v1, *v2;
+    int f;
+    void inorder(TreeNode *root, TreeNode *&p)
     {
-        if (root->left)
-            inorder(root->left);
-        v.push_back(root);
-        if (root->right)
-            inorder(root->right);
+        if (!root || f)
+            return;
+        inorder(root->left, p);
+        if (!(!p || root->val > p->val))
+        {
+            v1 = p;
+            f = 1;
+            return;
+        }
+        p = root;
+        inorder(root->right, p);
+    }
+    void inorder_(TreeNode *root, TreeNode *&p)
+    {
+        if (!root || f)
+            return;
+        inorder_(root->right, p);
+        if (!(!p || root->val < p->val))
+        {
+            v2 = p;
+            f = 1;
+            return;
+        }
+        p = root;
+        inorder_(root->left, p);
     }
 };
 int main(int argc, char const *argv[])

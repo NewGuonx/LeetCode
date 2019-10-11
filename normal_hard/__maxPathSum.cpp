@@ -20,24 +20,25 @@ public:
     {
         if (!root)
             return 0;
-        this->maxsum = INT_MIN;
-        dfs(root);
-        return maxsum;
+        this->max_sum = INT_MIN;
+        postOrder(root);
+        return max_sum;
     }
 
 private:
-    int maxsum;
-    int dfs(TreeNode *root)
+    int max_sum;
+    int postOrder(TreeNode *root)
     {
         if (!root)
             return 0;
-        int l = dfs(root->left);
-        int r = dfs(root->right);
+        int l = postOrder(root->left);
+        int r = postOrder(root->right);
         int tmp = root->val;
         tmp += l > 0 ? l : 0;
         tmp += r > 0 ? r : 0;
-        maxsum = max(maxsum, tmp);
-        return max(l, r) > 0 ? max(l, r) + root->val : root->val;
+        max_sum = max(max_sum, tmp); // comparison
+        tmp = max(l, r);
+        return tmp > 0 ? tmp + root->val : root->val;
     }
 };
 int main(int argc, char const *argv[])
