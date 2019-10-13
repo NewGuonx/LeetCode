@@ -16,28 +16,19 @@ struct TreeNode
 class Solution
 {
 public:
-    int sumNumbers(TreeNode *root)
+    int __trav(TreeNode *root, int _sum)
     {
         if (!root)
             return 0;
-        anssum = 0;
-        dfs(root);
-        return anssum;
-    }
-    string path;
-    int anssum;
-    void dfs(TreeNode *root)
-    {
-        if (!root)
-            return;
-        string s = to_string(root->val);
-        path += s;
+        _sum = 10 * _sum + root->val;
         if (!root->left && !root->right)
-            anssum += stoi(path);
-        dfs(root->left);
-        dfs(root->right);
-        for (int i = 0; i < s.size(); i++)
-            path.pop_back();
+            return _sum;
+        return __trav(root->left, _sum) +
+               __trav(root->right, _sum);
+    }
+    int sumNumbers(TreeNode *root)
+    {
+        return __trav(root, 0);
     }
 };
 int main(int argc, char const *argv[])

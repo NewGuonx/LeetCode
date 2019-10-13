@@ -13,9 +13,7 @@ public:
     Node *left;
     Node *right;
     Node *next;
-
     Node() {}
-
     Node(int _val, Node *_left, Node *_right, Node *_next)
     {
         val = _val;
@@ -31,21 +29,23 @@ public:
     {
         if (!root)
             return root;
-        Node *v = nullptr, *post = nullptr;
+        Node *v = nullptr, *walk, *dummy = new Node();
         deque<Node *> q, nexq;
         q.push_back(root);
         while (q.size())
         {
+            walk = dummy;
             while (q.size())
             {
                 v = q.front(), q.pop_front();
+                walk->next = v;
+                walk = v;
                 if (v->left)
                     nexq.push_back(v->left);
                 if (v->right)
                     nexq.push_back(v->right);
-                post = q.empty() ? nullptr : q.front();
-                v->next = post;
             }
+            v->next = nullptr;
             swap(q, nexq);
         }
         return root;
