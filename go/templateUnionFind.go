@@ -1,4 +1,4 @@
-package template
+package union
 
 // UnionFind defind
 // 路径压缩 + 秩优化
@@ -80,19 +80,6 @@ func (uf *UnionFindCount) Find(p int) int {
 	}
 	return root
 }
-
-// 不进行秩压缩，时间复杂度爆炸，太高了
-// func (uf *UnionFindCount) union(p, q int) {
-// 	proot := uf.find(p)
-// 	qroot := uf.find(q)
-// 	if proot == qroot {
-// 		return
-// 	}
-// 	if proot != qroot {
-// 		uf.parent[proot] = qroot
-// 		uf.count[qroot] += uf.count[proot]
-// 	}
-// }
 
 // Union define
 func (uf *UnionFindCount) Union(p, q int) {

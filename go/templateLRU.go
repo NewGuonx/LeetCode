@@ -1,3 +1,5 @@
+package lru
+
 type LRUCache struct {
 	head, tail *Node
 	Keys       map[int]*Node

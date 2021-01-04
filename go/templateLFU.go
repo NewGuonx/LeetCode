@@ -1,3 +1,5 @@
+package lfu
+
 import "container/list"
 
 type LFUCache struct {

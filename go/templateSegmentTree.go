@@ -1,4 +1,4 @@
-package template
+package segtree
 
 // SegmentTree define
 type SegmentTree struct {
